@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// Init the render package
 func Init() {
 	if err := glfw.Init(); err != nil {
 		log.Fatalln("failed to initialize glfw:", err)
@@ -25,6 +26,7 @@ func Init() {
 		panic(err)
 	}
 
+	log.Print("Render Loop Starting")
 	for !window.ShouldClose() {
 		window.SwapBuffers()
 		glfw.PollEvents()
