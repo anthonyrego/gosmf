@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var screen window.Screen
+	screen := new(window.Screen)
 	screen.Init(1024, 768, "Dodge Example")
 	defer screen.Destroy()
 
