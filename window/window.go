@@ -18,7 +18,7 @@ type Screen struct {
 }
 
 // Init the window object
-func (window *Screen) Init(width int, height int, name string) {
+func (window *Screen) Init(width int, height int, vsync bool, name string) {
 	err := glfw.Init()
 	if err != nil {
 		log.Fatalln("failed to initialize glfw:", err)
@@ -34,6 +34,12 @@ func (window *Screen) Init(width int, height int, name string) {
 		panic(err)
 	}
 	window.Context.MakeContextCurrent()
+
+	if vsync {
+		glfw.SwapInterval(1)
+	} else {
+		glfw.SwapInterval(0)
+	}
 
 	if err := gl.Init(); err != nil {
 		panic(err)
