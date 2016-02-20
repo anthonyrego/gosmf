@@ -14,11 +14,17 @@ func init() {
 
 // Screen object
 type Screen struct {
-	Context *glfw.Window
+	context *glfw.Window
 }
 
-// Init the window object
-func (window *Screen) Init(width int, height int, vsync bool, name string) {
+// New returns a newly created Screen
+func New(width int, height int, vsync bool, name string) *Screen {
+	s := &Screen{}
+	s.init(width, height, vsync, name)
+	return s
+}
+
+func (window *Screen) init(width int, height int, vsync bool, name string) {
 	err := glfw.Init()
 	if err != nil {
 		log.Fatalln("failed to initialize glfw:", err)
@@ -29,11 +35,11 @@ func (window *Screen) Init(width int, height int, vsync bool, name string) {
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
-	window.Context, err = glfw.CreateWindow(width, height, name, nil, nil)
+	win, err := glfw.CreateWindow(width, height, name, nil, nil)
 	if err != nil {
 		panic(err)
 	}
-	window.Context.MakeContextCurrent()
+	win.MakeContextCurrent()
 
 	if vsync {
 		glfw.SwapInterval(1)
@@ -53,23 +59,24 @@ func (window *Screen) Init(width int, height int, vsync bool, name string) {
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(1.0, 1.0, 1.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	window.Context.SwapBuffers()
+	window.context = win
+	window.context.SwapBuffers()
 }
 
 // IsActive returns the status of the window
 func (window *Screen) IsActive() bool {
-	return !window.Context.ShouldClose()
+	return !window.context.ShouldClose()
 }
 
 // BlitScreen swaps the buffers and clears the screen
 func (window *Screen) BlitScreen() {
-	window.Context.SwapBuffers()
+	window.context.SwapBuffers()
 	glfw.PollEvents()
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
 // Destroy cleans up the window
 func (window *Screen) Destroy() {
-	window.Context.Destroy()
+	window.context.Destroy()
 	glfw.Terminate()
 }
