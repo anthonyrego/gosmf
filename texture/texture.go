@@ -11,7 +11,7 @@ import (
 
 // Texture object
 type Texture struct {
-	id   uint32
+	ID   uint32
 	name string
 }
 
@@ -61,7 +61,7 @@ func (t *Texture) create(file string) error {
 		gl.UNSIGNED_BYTE,
 		gl.Ptr(rgba.Pix))
 
-	t.id = tex
+	t.ID = tex
 	t.name = file
 	return nil
 }
