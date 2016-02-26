@@ -6,17 +6,25 @@ import (
 	"strings"
 )
 
-// DefaultShader basic lighting shader
-const DefaultShader = 1
+// Shader is a struct for render programs
+type Shader struct {
+	vert   string
+	frag   string
+	id     uint32
+	loaded bool
+}
 
 // UseShader will draw everything with this program and load it if it isnt loaded.
-func UseShader(shader uint32) {
-
-	program, err := newProgram(vertexShader, fragmentShader)
-	if err != nil {
-		panic(err)
+func UseShader(shader *Shader) {
+	if !shader.loaded {
+		program, err := newProgram(shader.vert, shader.frag)
+		if err != nil {
+			panic(err)
+		}
+		shader.id = program
+		shader.loaded = true
 	}
-	gl.UseProgram(program)
+	gl.UseProgram(shader.id)
 }
 
 func newProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error) {
@@ -75,27 +83,3 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 
 	return shader, nil
 }
-
-var vertexShader = `
-#version 330
-uniform mat4 projection;
-uniform mat4 camera;
-uniform mat4 model;
-in vec3 vert;
-in vec2 vertTexCoord;
-out vec2 fragTexCoord;
-void main() {
-    fragTexCoord = vertTexCoord;
-    gl_Position = projection * camera * model * vec4(vert, 1);
-}
-` + "\x00"
-
-var fragmentShader = `
-#version 330
-uniform sampler2D tex;
-in vec2 fragTexCoord;
-out vec4 outputColor;
-void main() {
-    outputColor = texture(tex, fragTexCoord);
-}
-` + "\x00"
