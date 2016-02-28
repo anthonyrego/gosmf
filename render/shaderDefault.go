@@ -11,7 +11,7 @@ var DefaultShader = Shader{
 	void main() {
 	    fragTexCoord = vertTexCoord;
 
-	    gl_Position = vec4(vert, 1);
+	    gl_Position = vec4(vert, 2);
 	}
   ` + "\x00",
 	frag: `
