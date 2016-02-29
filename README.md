@@ -12,13 +12,13 @@ import (
 )
 
 func main() {
-	screen := window.New(1024, 768, true, "Dodge Example")
+	screen := window.New(600, 600, true, "Dodge Example")
 	defer screen.Destroy()
 
 	tex := texture.New("box.png")
 	render.UseShader(&render.DefaultShader)
-	render.DrawSprite(tex, 128, 128, 0, 0)
 	for screen.IsActive() {
+		render.DrawSprite(tex, 128, 128, 0, 0)
 		screen.BlitScreen()
 	}
 }
