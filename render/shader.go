@@ -30,15 +30,7 @@ func (shader *Shader) Activate() {
 // UseShader will load a default shader from a map of shaders
 func UseShader(shaderName string) (shader *Shader) {
 	if shader := defaultShaders[shaderName]; shader.vert != "" {
-		if !shader.loaded {
-			program, err := newProgram(shader.vert, shader.frag)
-			if err != nil {
-				panic(err)
-			}
-			shader.id = program
-			shader.loaded = true
-		}
-		gl.UseProgram(shader.id)
+		shader.Activate()
 		return &shader
 	}
 	return nil
