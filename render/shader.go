@@ -14,8 +14,8 @@ type Shader struct {
 	loaded bool
 }
 
-// UseShader will draw everything with this program and load it if it isnt loaded.
-func UseShader(shader *Shader) {
+// Activate will draw everything with this program and load it if it isnt loaded.
+func (shader *Shader) Activate() {
 	if !shader.loaded {
 		program, err := newProgram(shader.vert, shader.frag)
 		if err != nil {
@@ -25,6 +25,23 @@ func UseShader(shader *Shader) {
 		shader.loaded = true
 	}
 	gl.UseProgram(shader.id)
+}
+
+// UseShader will load a default shader from a map of shaders
+func UseShader(shaderName string) (shader *Shader) {
+	if shader := defaultShaders[shaderName]; shader.vert != "" {
+		if !shader.loaded {
+			program, err := newProgram(shader.vert, shader.frag)
+			if err != nil {
+				panic(err)
+			}
+			shader.id = program
+			shader.loaded = true
+		}
+		gl.UseProgram(shader.id)
+		return &shader
+	}
+	return nil
 }
 
 func newProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error) {
