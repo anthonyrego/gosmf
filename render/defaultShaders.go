@@ -11,7 +11,7 @@ var defaultShaders = map[string]Shader{
   	void main() {
   	    fragTexCoord = vertTexCoord;
 
-  	    gl_Position = vec4(vert, 2);
+  	    gl_Position = vec4(vert, 10);
   	}
     ` + "\x00",
 		frag: `

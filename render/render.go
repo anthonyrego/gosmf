@@ -13,9 +13,9 @@ type Sprite struct {
 }
 
 // NewSprite returns a newly created Sprite
-func NewSprite(file string) *Sprite {
+func NewSprite(file string, width int, height int) *Sprite {
 	s := &Sprite{}
-	err := s.create(file)
+	err := s.create(file, width, height)
 	if err != nil {
 		log.Fatalln("failed to create sprite:", err)
 		return nil
@@ -23,7 +23,7 @@ func NewSprite(file string) *Sprite {
 	return s
 }
 
-func (sprite *Sprite) create(file string) error {
+func (sprite *Sprite) create(file string, width int, height int) error {
 	image, err := texture.New(file)
 	if err != nil {
 		return err
@@ -37,6 +37,20 @@ func (sprite *Sprite) create(file string) error {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+
+	w := float32(width)
+	h := float32(height)
+
+	spriteVertices := []float32{
+		w, 0.0, 1.0, 1.0, 1.0,
+		0.0, h, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0, 1.0,
+
+		w, 0.0, 1.0, 1.0, 1.0,
+		0.0, h, 1.0, 0.0, 0.0,
+		w, h, 1.0, 1.0, 0.0,
+	}
+
 	gl.BufferData(gl.ARRAY_BUFFER, len(spriteVertices)*4, gl.Ptr(spriteVertices), gl.STATIC_DRAW)
 
 	vertAttrib := uint32(0)
@@ -53,7 +67,7 @@ func (sprite *Sprite) create(file string) error {
 }
 
 // Draw will draw your Sprites, duh
-func (sprite *Sprite) Draw(x int, y int, w int, h int) {
+func (sprite *Sprite) Draw(x int, y int) {
 
 	gl.BindVertexArray(sprite.vao)
 
@@ -61,14 +75,4 @@ func (sprite *Sprite) Draw(x int, y int, w int, h int) {
 	gl.BindTexture(gl.TEXTURE_2D, sprite.image.ID)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 1*2*3)
-}
-
-var spriteVertices = []float32{
-	1.0, -1.0, 1.0, 1.0, 1.0,
-	-1.0, 1.0, 1.0, 0.0, 0.0,
-	-1.0, -1.0, 1.0, 0.0, 1.0,
-
-	1.0, -1.0, 1.0, 1.0, 1.0,
-	-1.0, 1.0, 1.0, 0.0, 0.0,
-	1.0, 1.0, 1.0, 1.0, 0.0,
 }

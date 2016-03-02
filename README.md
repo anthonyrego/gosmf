@@ -6,7 +6,6 @@ package main
 
 import (
 	"github.com/anthonyrego/dodge/render"
-	"github.com/anthonyrego/dodge/texture"
 	"github.com/anthonyrego/dodge/window"
 	_ "image/png"
 )
@@ -15,11 +14,12 @@ func main() {
 	screen := window.New(600, 600, true, "Dodge Example")
 	defer screen.Destroy()
 
-	tex := texture.New("box.png")
 	render.UseShader("default")
+	image := render.NewSprite("box.png", 16, 16)
 	for screen.IsActive() {
-		render.DrawSprite(tex, 128, 128, 0, 0)
+		image.Draw(0, 0)
 		screen.BlitScreen()
 	}
+}
 }
 ```
