@@ -3,6 +3,7 @@ package render
 import (
 	"fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
 	"strings"
 )
 
@@ -67,6 +68,21 @@ func newProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error)
 
 	gl.DeleteShader(vertexShader)
 	gl.DeleteShader(fragmentShader)
+
+	gl.UseProgram(program)
+	//projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(800)/600, 0.1, 10.0)
+	projection := mgl32.Ortho2D(0, 800, 600, 0)
+	projectionUniform := gl.GetUniformLocation(program, gl.Str("projection\x00"))
+	gl.UniformMatrix4fv(projectionUniform, 1, false, &projection[0])
+
+	camera := mgl32.LookAtV(mgl32.Vec3{3, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 1, 0})
+	cameraUniform := gl.GetUniformLocation(program, gl.Str("camera\x00"))
+	gl.UniformMatrix4fv(cameraUniform, 1, false, &camera[0])
+
+	model := mgl32.Ident4()
+	model = mgl32.Translate3D(128, 128, 0)
+	modelUniform := gl.GetUniformLocation(program, gl.Str("model\x00"))
+	gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
 
 	return program, nil
 }
