@@ -9,10 +9,13 @@ import (
 
 // Shader is a struct for render programs
 type Shader struct {
-	vert   string
-	frag   string
-	id     uint32
-	loaded bool
+	vert       string
+	frag       string
+	id         uint32
+	loaded     bool
+	projection int32
+	camera     int32
+	model      int32
 }
 
 // Activate will draw everything with this program and load it if it isnt loaded.
@@ -24,7 +27,20 @@ func (shader *Shader) Activate() {
 		}
 		shader.id = program
 		shader.loaded = true
+
+		gl.UseProgram(shader.id)
+
+		shader.projection = gl.GetUniformLocation(program, gl.Str("projection\x00"))
+		shader.camera = gl.GetUniformLocation(program, gl.Str("camera\x00"))
+		shader.model = gl.GetUniformLocation(program, gl.Str("model\x00"))
+
+		// Move des outta har
+		project := mgl32.Ortho2D(0, 800, 600, 0)
+		gl.UniformMatrix4fv(shader.projection, 1, false, &project[0])
+		cam := mgl32.LookAtV(mgl32.Vec3{3, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 1, 0})
+		gl.UniformMatrix4fv(shader.camera, 1, false, &cam[0])
 	}
+	state.shader = shader
 	gl.UseProgram(shader.id)
 }
 
@@ -68,21 +84,6 @@ func newProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error)
 
 	gl.DeleteShader(vertexShader)
 	gl.DeleteShader(fragmentShader)
-
-	gl.UseProgram(program)
-	//projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(800)/600, 0.1, 10.0)
-	projection := mgl32.Ortho2D(0, 800, 600, 0)
-	projectionUniform := gl.GetUniformLocation(program, gl.Str("projection\x00"))
-	gl.UniformMatrix4fv(projectionUniform, 1, false, &projection[0])
-
-	camera := mgl32.LookAtV(mgl32.Vec3{3, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 1, 0})
-	cameraUniform := gl.GetUniformLocation(program, gl.Str("camera\x00"))
-	gl.UniformMatrix4fv(cameraUniform, 1, false, &camera[0])
-
-	model := mgl32.Ident4()
-	model = mgl32.Translate3D(128, 128, 0)
-	modelUniform := gl.GetUniformLocation(program, gl.Str("model\x00"))
-	gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
 
 	return program, nil
 }

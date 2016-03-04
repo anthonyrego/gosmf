@@ -11,15 +11,14 @@ import (
 )
 
 func main() {
-	screen := window.New(600, 600, true, "Dodge Example")
+	screen := window.New(800, 600, true, "Dodge Example")
 	defer screen.Destroy()
 
 	render.UseShader("default")
 	image := render.NewSprite("box.png", 16, 16)
 	for screen.IsActive() {
-		image.Draw(0, 0)
+		image.Draw(200, 100)
 		screen.BlitScreen()
 	}
-}
 }
 ```

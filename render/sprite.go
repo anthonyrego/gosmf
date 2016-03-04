@@ -3,6 +3,7 @@ package render
 import (
 	"github.com/anthonyrego/dodge/texture"
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
 	"log"
 )
 
@@ -69,6 +70,11 @@ func (sprite *Sprite) create(file string, width int, height int) error {
 
 // Draw will draw your Sprites, duh
 func (sprite *Sprite) Draw(x int, y int) {
+
+	model := mgl32.Translate3D(float32(x), float32(y), 0)
+	// remember this is in radians!
+	//model = model.Mul4(mgl32.HomogRotate3D(float32(0), mgl32.Vec3{0, 0, 1}))
+	gl.UniformMatrix4fv(state.shader.model, 1, false, &model[0])
 
 	gl.BindVertexArray(sprite.vao)
 
