@@ -43,13 +43,13 @@ func (sprite *Sprite) create(file string, width int, height int) error {
 	h := float32(height)
 
 	spriteVertices := []float32{
-		w, 0.0, 1.0, 1.0, 1.0,
-		0.0, h, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0, 1.0,
+		w, h, 1.0, 1.0, 1.0,
+		0.0, 0.0, 1.0, 0.0, 0.0,
+		0.0, h, 1.0, 0.0, 1.0,
 
-		w, 0.0, 1.0, 1.0, 1.0,
-		0.0, h, 1.0, 0.0, 0.0,
-		w, h, 1.0, 1.0, 0.0,
+		w, h, 1.0, 1.0, 1.0,
+		0.0, 0.0, 1.0, 0.0, 0.0,
+		w, 0.0, 1.0, 1.0, 0.0,
 	}
 
 	gl.BufferData(gl.ARRAY_BUFFER, len(spriteVertices)*4, gl.Ptr(spriteVertices), gl.STATIC_DRAW)
@@ -73,7 +73,7 @@ func (sprite *Sprite) Draw(x int, y int) {
 
 	model := mgl32.Translate3D(float32(x), float32(y), 0)
 	// remember this is in radians!
-	//model = model.Mul4(mgl32.HomogRotate3D(float32(0), mgl32.Vec3{0, 0, 1}))
+	// model = model.Mul4(mgl32.HomogRotate3D(float32(0), mgl32.Vec3{0, 0, 1}))
 	gl.UniformMatrix4fv(state.shader.model, 1, false, &model[0])
 
 	gl.BindVertexArray(sprite.vao)
