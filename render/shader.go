@@ -35,9 +35,9 @@ func (shader *Shader) Activate() {
 		shader.model = gl.GetUniformLocation(program, gl.Str("model\x00"))
 
 		// Move des outta har
-		project := mgl32.Ortho2D(0, 800, 600, 0)
+		project := mgl32.Ortho(800, 0, 600, 0, -1, 1000)
 		gl.UniformMatrix4fv(shader.projection, 1, false, &project[0])
-		cam := mgl32.LookAtV(mgl32.Vec3{3, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 1, 0})
+		cam := mgl32.LookAtV(mgl32.Vec3{800, 0, -1}, mgl32.Vec3{800, 0, 0}, mgl32.Vec3{0, 1, 0})
 		gl.UniformMatrix4fv(shader.camera, 1, false, &cam[0])
 	}
 	state.shader = shader

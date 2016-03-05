@@ -16,7 +16,7 @@ var defaultShaders = map[string]Shader{
   	void main() {
   	    fragTexCoord = vertTexCoord;
 
-  	    gl_Position = projection * model * vec4(vert, 1);
+  	    gl_Position = projection * camera *  model * vec4(vert, 1);
   	}
     ` + "\x00",
 		frag: `
