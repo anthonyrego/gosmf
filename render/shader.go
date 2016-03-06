@@ -3,7 +3,6 @@ package render
 import (
 	"fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/go-gl/mathgl/mgl32"
 	"strings"
 )
 
@@ -34,11 +33,6 @@ func (shader *Shader) Activate() {
 		shader.camera = gl.GetUniformLocation(program, gl.Str("camera\x00"))
 		shader.model = gl.GetUniformLocation(program, gl.Str("model\x00"))
 
-		// Move des outta har
-		project := mgl32.Ortho(800, 0, 600, 0, -1, 1000)
-		gl.UniformMatrix4fv(shader.projection, 1, false, &project[0])
-		cam := mgl32.LookAtV(mgl32.Vec3{800, 0, -1}, mgl32.Vec3{800, 0, 0}, mgl32.Vec3{0, 1, 0})
-		gl.UniformMatrix4fv(shader.camera, 1, false, &cam[0])
 	}
 	state.shader = shader
 	gl.UseProgram(shader.id)

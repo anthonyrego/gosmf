@@ -15,6 +15,8 @@ func init() {
 // Screen object
 type Screen struct {
 	context *glfw.Window
+	Width   int
+	Height  int
 }
 
 // New returns a newly created Screen
@@ -62,6 +64,8 @@ func (window *Screen) init(width int, height int, vsync bool, name string) {
 	gl.ClearColor(1.0, 1.0, 1.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	window.context = win
+	window.Width = width
+	window.Height = height
 	window.context.SwapBuffers()
 }
 
