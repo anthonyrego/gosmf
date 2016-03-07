@@ -14,8 +14,9 @@ func main() {
 	screen := window.New(800, 600, true, "Dodge Example")
 	defer screen.Destroy()
 
-	shader := render.UseShader("default")
-	render.Setup2DProjection(shader, screen)
+	render.UseShader("default")
+	render.Setup2DProjection(800, 600)
+	render.Set2DCamera(0, 0)
 
 	image := render.NewSprite("box.png", 16, 16)
 
