@@ -9,21 +9,27 @@ import (
 	"os"
 )
 
+var textureList = map[string]*Texture{}
+
 // Texture object
 type Texture struct {
-	ID   uint32
-	name string
+	ID uint32
 }
 
 // New returns a newly created Texture
 func New(file string) (*Texture, error) {
+
+	if tex, found := textureList[file]; found {
+		return tex, nil
+	}
 	s := &Texture{}
 	err := s.create(file)
 	if err != nil {
 		log.Fatalln("failed to create texture:", err)
 		return nil, err
 	}
-	return s, nil
+	textureList[file] = s
+	return textureList[file], nil
 }
 
 func (t *Texture) create(file string) error {
@@ -62,6 +68,5 @@ func (t *Texture) create(file string) error {
 		gl.Ptr(rgba.Pix))
 
 	t.ID = tex
-	t.name = file
 	return nil
 }
