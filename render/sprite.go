@@ -7,6 +7,8 @@ import (
 	"log"
 )
 
+var spriteList = map[string]*Sprite{}
+
 // Sprite is used for rendering textures in a 2D ortho way
 type Sprite struct {
 	image *texture.Texture
@@ -14,14 +16,18 @@ type Sprite struct {
 }
 
 // NewSprite returns a newly created Sprite
-func NewSprite(file string, width int, height int) *Sprite {
+func NewSprite(file string, width int, height int) (*Sprite, error) {
+	if sprite, found := spriteList[file]; found {
+		return sprite, nil
+	}
 	s := &Sprite{}
 	err := s.create(file, width, height)
 	if err != nil {
 		log.Fatalln("failed to create sprite:", err)
-		return nil
+		return nil, err
 	}
-	return s
+	spriteList[file] = s
+	return spriteList[file], nil
 }
 
 func (sprite *Sprite) create(file string, width int, height int) error {
