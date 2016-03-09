@@ -12,9 +12,9 @@ type Shader struct {
 	frag       string
 	id         uint32
 	loaded     bool
-	projection int32
-	camera     int32
-	model      int32
+	Projection int32
+	Camera     int32
+	Model      int32
 }
 
 // Activate will draw everything with this program and load it if it isnt loaded.
@@ -29,9 +29,9 @@ func (shader *Shader) Activate() {
 
 		gl.UseProgram(shader.id)
 
-		shader.projection = gl.GetUniformLocation(program, gl.Str("projection\x00"))
-		shader.camera = gl.GetUniformLocation(program, gl.Str("camera\x00"))
-		shader.model = gl.GetUniformLocation(program, gl.Str("model\x00"))
+		shader.Projection = gl.GetUniformLocation(program, gl.Str("projection\x00"))
+		shader.Camera = gl.GetUniformLocation(program, gl.Str("camera\x00"))
+		shader.Model = gl.GetUniformLocation(program, gl.Str("model\x00"))
 
 	}
 	state.shader = shader

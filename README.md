@@ -5,21 +5,26 @@ WIP golang media framework
 package main
 
 import (
+	"github.com/anthonyrego/dodge/camera"
 	"github.com/anthonyrego/dodge/render"
 	"github.com/anthonyrego/dodge/window"
 	_ "image/png"
 )
 
 func main() {
-	screen := window.New(800, 600, true, "Dodge Example")
+	windowWidth := 800
+	windowHeight := 600
+
+	screen := window.New(windowWidth, windowHeight, true, "Dodge Example")
 	defer screen.Destroy()
 
 	render.UseShader("default")
-	render.Setup2DProjection(800, 600)
-	render.Set2DCamera(0, 0)
 
-	image := render.NewSprite("box.png", 16, 16)
+	cam1 := camera.New()
+	cam1.SetOrtho(windowWidth, windowHeight, 200)
+	cam1.SetPosition2D(0, 0)
 
+	image, _ := render.NewSprite("box.png", 16, 16)
 	for screen.IsActive() {
 		image.Draw(200, 200, 1)
 		image.Draw(100, 100, 0)

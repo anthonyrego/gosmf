@@ -80,12 +80,13 @@ func (sprite *Sprite) Draw(x int, y int, z int) {
 	model := mgl32.Translate3D(float32(x), float32(y), float32(z))
 	// remember this is in radians!
 	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
-	gl.UniformMatrix4fv(state.shader.model, 1, false, &model[0])
+	if shader := GetCurrentShader(); shader != nil {
+		gl.UniformMatrix4fv(shader.Model, 1, false, &model[0])
+	}
 
 	gl.BindVertexArray(sprite.vao)
 
-	gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindTexture(gl.TEXTURE_2D, sprite.image.ID)
+	sprite.image.Bind()
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 1*2*3)
 }

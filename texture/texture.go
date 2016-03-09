@@ -13,7 +13,7 @@ var textureList = map[string]*Texture{}
 
 // Texture object
 type Texture struct {
-	ID uint32
+	id uint32
 }
 
 // New returns a newly created Texture
@@ -67,6 +67,12 @@ func (t *Texture) create(file string) error {
 		gl.UNSIGNED_BYTE,
 		gl.Ptr(rgba.Pix))
 
-	t.ID = tex
+	t.id = tex
 	return nil
+}
+
+// Bind will set the current texture to the active texture
+func (t *Texture) Bind() {
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, t.id)
 }
