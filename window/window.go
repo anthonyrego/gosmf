@@ -2,6 +2,7 @@ package window
 
 import (
 	"fmt"
+	"github.com/anthonyrego/dodge/input"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 	"log"
@@ -65,6 +66,8 @@ func (window *Screen) init(width int, height int, vsync bool, name string) {
 	window.Width = width
 	window.Height = height
 	window.context.SwapBuffers()
+
+	window.context.SetKeyCallback(input.Callback)
 }
 
 // IsActive returns the status of the window
