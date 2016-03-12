@@ -75,6 +75,11 @@ func (window *Screen) IsActive() bool {
 	return !window.context.ShouldClose()
 }
 
+// SetToClose will signal to close the window context
+func (window *Screen) SetToClose() {
+	window.context.SetShouldClose(true)
+}
+
 // BlitScreen swaps the buffers and clears the screen
 func (window *Screen) BlitScreen() {
 	window.context.SwapBuffers()
