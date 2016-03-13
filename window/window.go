@@ -67,7 +67,7 @@ func (window *Screen) init(width int, height int, vsync bool, name string) {
 	window.Height = height
 	window.context.SwapBuffers()
 
-	window.context.SetKeyCallback(input.Callback)
+	input.AttachInputCallbacksToWindow(window.context)
 }
 
 // IsActive returns the status of the window

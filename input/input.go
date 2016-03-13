@@ -15,8 +15,12 @@ func AddListener(key int, callback func(event int)) {
 	listenerList[key] = &listener{callback}
 }
 
-// Callback function for input
-var Callback = func(window *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+// AttachInputCallbacksToWindow will enable the input callbacks on specified window
+func AttachInputCallbacksToWindow(window *glfw.Window) {
+	window.SetKeyCallback(callback)
+}
+
+var callback = func(window *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 	if li, found := listenerList[int(key)]; found {
 		li.callback(int(action))
 	}
