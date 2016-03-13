@@ -4,16 +4,20 @@ import (
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
-// KeyChannel is a channel pipe to communicate key presses to go routines
-var KeyChannel = make(chan glfw.Key)
+var listenerList = map[int]*listener{}
+
+type listener struct {
+	callback func(action int)
+}
+
+// AddListener creates a new key listener
+func AddListener(key int, callback func(action int)) {
+	listenerList[key] = &listener{callback}
+}
 
 // Callback function for input
 var Callback = func(window *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-	if action == glfw.Press {
-		go func() {
-			if len(KeyChannel) == 0 {
-				KeyChannel <- key
-			}
-		}()
+	if li, found := listenerList[int(key)]; found {
+		li.callback(int(action))
 	}
 }

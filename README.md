@@ -5,7 +5,6 @@ WIP golang media framework
 package main
 
 import (
-	"fmt"
 	"github.com/anthonyrego/dodge/camera"
 	"github.com/anthonyrego/dodge/input"
 	"github.com/anthonyrego/dodge/render"
@@ -28,12 +27,11 @@ func main() {
 
 	image, _ := render.NewSprite("pouch.png", 264, 347)
 
-	go func() {
-		for {
-			key := <-input.KeyChannel
-			fmt.Println("Button pressed ", key)
+	input.AddListener(input.KeyEscape, func(action int) {
+		if action == input.Release {
+			screen.SetToClose()
 		}
-	}()
+	})
 
 	for screen.IsActive() {
 		image.Draw(200, 200, 1)
