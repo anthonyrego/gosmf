@@ -7,11 +7,11 @@ import (
 var listenerList = map[int]*listener{}
 
 type listener struct {
-	callback func(action int)
+	callback func(event int)
 }
 
-// AddListener creates a new key listener
-func AddListener(key int, callback func(action int)) {
+// AddListener creates a new key listener, only the last listener for a button will be honored
+func AddListener(key int, callback func(event int)) {
 	listenerList[key] = &listener{callback}
 }
 

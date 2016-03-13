@@ -27,8 +27,8 @@ func main() {
 
 	image, _ := render.NewSprite("pouch.png", 264, 347)
 
-	input.AddListener(input.KeyEscape, func(action int) {
-		if action == input.Release {
+	input.AddListener(input.KeyEscape, func(event int) {
+		if event == input.Release {
 			screen.SetToClose()
 		}
 	})
