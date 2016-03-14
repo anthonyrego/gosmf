@@ -75,9 +75,9 @@ func (sprite *Sprite) create(file string, width int, height int) error {
 }
 
 // Draw will draw the sprite in the x,y and z
-func (sprite *Sprite) Draw(x int, y int, z int) {
+func (sprite *Sprite) Draw(x float32, y float32, z float32) {
 
-	model := mgl32.Translate3D(float32(x), float32(y), float32(z))
+	model := mgl32.Translate3D(x, y, z)
 	// remember this is in radians!
 	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
 	if shader := GetCurrentShader(); shader != nil {
