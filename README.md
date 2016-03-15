@@ -51,18 +51,19 @@ func initCamera(windowWidth int, windowHeight int) func() {
 	cam1.SetPosition2D(0, 0)
 	camx := 0.0
 	camy := 0.0
+	speed := 5.0
 	return func() {
 		if input.GetKeyEventState(input.KeyA) == input.Press {
-			camx -= 4
+			camx -= speed
 		}
 		if input.GetKeyEventState(input.KeyD) == input.Press {
-			camx += 4
+			camx += speed
 		}
 		if input.GetKeyEventState(input.KeyW) == input.Press {
-			camy -= 4
+			camy -= speed
 		}
 		if input.GetKeyEventState(input.KeyS) == input.Press {
-			camy += 4
+			camy += speed
 		}
 		cam1.SetPosition2D(float32(camx), float32(camy))
 	}
