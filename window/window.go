@@ -3,6 +3,7 @@ package window
 import (
 	"fmt"
 	"github.com/anthonyrego/dodge/input"
+	"github.com/anthonyrego/dodge/timing"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 	"log"
@@ -15,9 +16,11 @@ func init() {
 
 // Screen object
 type Screen struct {
-	context *glfw.Window
-	Width   int
-	Height  int
+	context     *glfw.Window
+	Width       int
+	Height      int
+	frameTime   float64
+	elapsedTime float64
 }
 
 // New returns a newly created Screen
@@ -68,6 +71,8 @@ func (window *Screen) init(width int, height int, vsync bool, name string) {
 	window.context.SwapBuffers()
 
 	input.AttachInputToWindow(window.context)
+
+	window.frameTime = timing.GetTime().Seconds()
 }
 
 // IsActive returns the status of the window
@@ -85,6 +90,14 @@ func (window *Screen) BlitScreen() {
 	window.context.SwapBuffers()
 	glfw.PollEvents()
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+	time := timing.GetTime().Seconds()
+	window.elapsedTime = time - window.frameTime
+	window.frameTime = time
+}
+
+// GetTimeSinceLastFrame will return the time since the last frame was drawn.
+func (window *Screen) GetTimeSinceLastFrame() float64 {
+	return window.elapsedTime
 }
 
 // Destroy cleans up the window
