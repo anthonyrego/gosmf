@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"runtime"
+	"time"
 
 	"github.com/anthonyrego/dodge/input"
-	"github.com/anthonyrego/dodge/timing"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
@@ -20,6 +20,7 @@ type Screen struct {
 	context     *glfw.Window
 	Width       int
 	Height      int
+	startTime   time.Time
 	frameTime   float64
 	elapsedTime float64
 }
@@ -73,7 +74,8 @@ func (window *Screen) init(width int, height int, vsync bool, name string) {
 
 	input.AttachInputToWindow(window.context)
 
-	window.frameTime = timing.GetTime().Seconds()
+	window.startTime = time.Now()
+	window.frameTime = time.Since(window.startTime).Seconds()
 }
 
 // IsActive returns the status of the window
@@ -91,7 +93,7 @@ func (window *Screen) BlitScreen() {
 	window.context.SwapBuffers()
 	glfw.PollEvents()
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	time := timing.GetTime().Seconds()
+	time := window.GetTime().Seconds()
 	window.elapsedTime = time - window.frameTime
 	window.frameTime = time
 }
@@ -99,6 +101,17 @@ func (window *Screen) BlitScreen() {
 // GetTimeSinceLastFrame will return the time since the last frame was drawn.
 func (window *Screen) GetTimeSinceLastFrame() float64 {
 	return window.elapsedTime
+}
+
+// GetTime returns the time duration since the start of the program
+func (window *Screen) GetTime() time.Duration {
+	return time.Since(window.startTime)
+}
+
+// AmountPerSecond returns the adjusted value for a per second value based on frame time
+// This really needs a better function name
+func (window *Screen) AmountPerSecond(persecond float64) float64 {
+	return persecond * window.elapsedTime
 }
 
 // Destroy cleans up the window
