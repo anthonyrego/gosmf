@@ -2,11 +2,12 @@ package texture
 
 import (
 	"fmt"
-	"github.com/go-gl/gl/v4.1-core/gl"
 	"image"
 	"image/draw"
 	"log"
 	"os"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 var textureList = map[string]*Texture{}

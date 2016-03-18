@@ -2,8 +2,9 @@ package render
 
 import (
 	"fmt"
-	"github.com/go-gl/gl/v4.1-core/gl"
 	"strings"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 // Shader is a struct for render programs

@@ -1,10 +1,11 @@
 package render
 
 import (
+	"log"
+
 	"github.com/anthonyrego/dodge/texture"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
-	"log"
 )
 
 var spriteList = map[string]*Sprite{}
