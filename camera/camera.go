@@ -1,7 +1,7 @@
 package camera
 
 import (
-	"github.com/anthonyrego/dodge/render"
+	"github.com/anthonyrego/dodge/shader"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 )
@@ -42,7 +42,7 @@ func New(setActive bool) *Camera {
 // SetActive will set current camera as the render camera
 func (cam *Camera) SetActive() {
 	state.activeCam = cam
-	if shader := render.GetCurrentShader(); shader != nil {
+	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.Projection, 1, false, &cam.projection[0])
 		gl.UniformMatrix4fv(shader.Camera, 1, false, &cam.loc[0])
 	}
@@ -68,7 +68,7 @@ func (cam *Camera) SetPosition2D(x float32, y float32) {
 }
 
 func (cam *Camera) update() {
-	if shader := render.GetCurrentShader(); shader != nil && cam == state.activeCam {
+	if shader := shader.GetActive(); shader != nil && cam == state.activeCam {
 		gl.UniformMatrix4fv(shader.Projection, 1, false, &cam.projection[0])
 		gl.UniformMatrix4fv(shader.Camera, 1, false, &cam.loc[0])
 	}

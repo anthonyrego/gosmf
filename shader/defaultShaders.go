@@ -1,4 +1,4 @@
-package render
+package shader
 
 var defaultShaders = map[string]Shader{
 	"default": Shader{

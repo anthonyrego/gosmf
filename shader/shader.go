@@ -1,4 +1,4 @@
-package render
+package shader
 
 import (
 	"fmt"
@@ -6,6 +6,15 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
+
+var state struct {
+	shader *Shader
+}
+
+// GetActive get the current shader in the state
+func GetActive() *Shader {
+	return state.shader
+}
 
 // Shader is a struct for render programs
 type Shader struct {
@@ -39,8 +48,8 @@ func (shader *Shader) Activate() {
 	gl.UseProgram(shader.id)
 }
 
-// UseShader will load a default shader from a map of shaders
-func UseShader(shaderName string) (shader *Shader) {
+// Use will load a default shader from a map of shaders
+func Use(shaderName string) (shader *Shader) {
 	if shader := defaultShaders[shaderName]; shader.vert != "" {
 		shader.Activate()
 		return &shader

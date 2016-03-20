@@ -1,8 +1,9 @@
-package render
+package sprite
 
 import (
 	"log"
 
+	"github.com/anthonyrego/dodge/shader"
 	"github.com/anthonyrego/dodge/texture"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -16,8 +17,8 @@ type Sprite struct {
 	vao   uint32
 }
 
-// NewSprite returns a newly created Sprite
-func NewSprite(file string, width int, height int) (*Sprite, error) {
+// New creates and returns a new Sprite object
+func New(file string, width int, height int) (*Sprite, error) {
 	if sprite, found := spriteList[file]; found {
 		return sprite, nil
 	}
@@ -81,7 +82,7 @@ func (sprite *Sprite) Draw(x float32, y float32, z float32) {
 	model := mgl32.Translate3D(x, y, z)
 	// remember this is in radians!
 	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
-	if shader := GetCurrentShader(); shader != nil {
+	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.Model, 1, false, &model[0])
 	}
 
