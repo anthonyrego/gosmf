@@ -5,13 +5,14 @@ WIP golang media framework
 package main
 
 import (
-	"fmt"
-	"github.com/anthonyrego/dodge/camera"
-	"github.com/anthonyrego/dodge/input"
-	"github.com/anthonyrego/dodge/render"
-	"github.com/anthonyrego/dodge/timing"
-	"github.com/anthonyrego/dodge/window"
 	_ "image/png"
+
+	"github.com/anthonyrego/dodge/camera"
+	"github.com/anthonyrego/dodge/font"
+	"github.com/anthonyrego/dodge/input"
+	"github.com/anthonyrego/dodge/shader"
+	"github.com/anthonyrego/dodge/sprite"
+	"github.com/anthonyrego/dodge/window"
 )
 
 func main() {
@@ -21,51 +22,49 @@ func main() {
 	screen := window.New(windowWidth, windowHeight, true, "Dodge Example")
 	defer screen.Destroy()
 
-	render.UseShader("default")
+	shader.Use("default")
 
-	updateCamera := initCamera(windowWidth, windowHeight)
+	updateCamera := initCamera(screen)
 
-	image, _ := render.NewSprite("pouch.png", 264, 347)
+	image, _ := sprite.New("pouch.png", 264, 347)
+
+	font.New("VeraMono.ttf")
 
 	input.AddListener(input.KeyEscape, func(event int) {
 		if event == input.Release {
 			screen.SetToClose()
 		}
 	})
-
-	fmt.Println("Time since start", timing.GetTime().Seconds())
-
 	for screen.IsActive() {
 		updateCamera()
-		image.Draw(200, 200, 1)
-		image.Draw(100, 100, 0)
 		image.Draw(0, 0, 200)
 		image.Draw(150, 150, 10)
 		screen.BlitScreen()
 	}
 }
 
-func initCamera(windowWidth int, windowHeight int) func() {
+func initCamera(screen *window.Screen) func() {
 	cam1 := camera.New(true)
-	cam1.SetOrtho(windowWidth, windowHeight, 200)
+	cam1.SetOrtho(screen.Width*2, screen.Height*2, 200)
 	cam1.SetPosition2D(0, 0)
 	camx := 0.0
 	camy := 0.0
-	speed := 5.0
+	speed := 300.0
 	return func() {
 		if input.GetKeyEventState(input.KeyA) == input.Press {
-			camx -= speed
+			camx -= screen.AmountPerSecond(speed)
 		}
 		if input.GetKeyEventState(input.KeyD) == input.Press {
-			camx += speed
+			camx += screen.AmountPerSecond(speed)
 		}
 		if input.GetKeyEventState(input.KeyW) == input.Press {
-			camy -= speed
+			camy -= screen.AmountPerSecond(speed)
 		}
 		if input.GetKeyEventState(input.KeyS) == input.Press {
-			camy += speed
+			camy += screen.AmountPerSecond(speed)
 		}
 		cam1.SetPosition2D(float32(camx), float32(camy))
 	}
 }
+
 ```
