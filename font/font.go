@@ -38,12 +38,12 @@ func New(file string) (*Font, error) {
 	return fontList[file], nil
 }
 
-// Draw will draw the font with text
-func (font *Font) Draw(text string, size float64) {
+// CreateTexture will create a texture for given text
+func (font *Font) CreateTexture(text string, width int, height int, size float64, dpi float64) uint32 {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
 
-	img := image.NewRGBA(image.Rect(0, 0, 800, 600))
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	draw.Draw(img, img.Bounds(), image.Transparent, image.ZP, draw.Src)
 
 	context.SetDst(img)
@@ -51,7 +51,7 @@ func (font *Font) Draw(text string, size float64) {
 	context.SetSrc(image.Black)
 
 	context.SetFontSize(size)
-	context.SetDPI(300)
+	context.SetDPI(dpi)
 
 	var tex uint32
 	gl.GenTextures(1, &tex)
@@ -64,7 +64,7 @@ func (font *Font) Draw(text string, size float64) {
 
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, tex)
-	context.DrawString(text, freetype.Pt(0, 200))
+	context.DrawString(text, freetype.Pt(0, height/2))
 	gl.TexImage2D(
 		gl.TEXTURE_2D,
 		0,
@@ -76,4 +76,5 @@ func (font *Font) Draw(text string, size float64) {
 		gl.UNSIGNED_BYTE,
 		gl.Ptr(img.Pix))
 
+	return tex
 }
