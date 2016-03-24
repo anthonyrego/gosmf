@@ -39,7 +39,7 @@ func New(file string) (*Font, error) {
 }
 
 // CreateTexture will create a texture for given text
-func (font *Font) CreateTexture(text string, width int, height int, size float64, dpi float64) uint32 {
+func (font *Font) createTexture(text string, width int, height int, size float64, dpi float64) uint32 {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
 
