@@ -38,7 +38,6 @@ func New(file string) (*Font, error) {
 	return fontList[file], nil
 }
 
-// CreateTexture will create a texture for given text
 func (font *Font) createTexture(text string, width int, height int, size float64, dpi float64) uint32 {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
@@ -77,4 +76,34 @@ func (font *Font) createTexture(text string, width int, height int, size float64
 		gl.Ptr(img.Pix))
 
 	return tex
+}
+
+func (font *Font) updateTexture(texture uint32, text string, width int, height int, size float64, dpi float64) {
+	context := freetype.NewContext()
+	context.SetFont(font.ttf)
+
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
+	draw.Draw(img, img.Bounds(), image.Transparent, image.ZP, draw.Src)
+
+	context.SetDst(img)
+	context.SetClip(img.Bounds())
+	context.SetSrc(image.Black)
+
+	context.SetFontSize(size)
+	context.SetDPI(dpi)
+
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, texture)
+
+	context.DrawString(text, freetype.Pt(0, height/2))
+	gl.TexSubImage2D(
+		gl.TEXTURE_2D,
+		0,
+		0,
+		0,
+		int32(img.Rect.Size().X),
+		int32(img.Rect.Size().Y),
+		gl.RGBA,
+		gl.UNSIGNED_BYTE,
+		gl.Ptr(img.Pix))
 }

@@ -8,8 +8,14 @@ import (
 
 // Billboard is an object for font rendering
 type Billboard struct {
-	image uint32
-	vao   uint32
+	image  uint32
+	vao    uint32
+	font   *Font
+	text   string
+	width  int
+	height int
+	size   float64
+	dpi    float64
 }
 
 // NewBillboard creates a 2D billboard for rendering
@@ -17,6 +23,13 @@ func (font *Font) NewBillboard(text string, width int, height int, size float64,
 	b := &Billboard{}
 
 	image := font.createTexture(text, width, height, size, dpi)
+
+	b.width = width
+	b.height = height
+	b.size = size
+	b.dpi = dpi
+	b.text = text
+	b.font = font
 
 	var vao uint32
 
@@ -72,4 +85,18 @@ func (billboard *Billboard) Draw(x float32, y float32, z float32) {
 	gl.BindTexture(gl.TEXTURE_2D, billboard.image)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 1*2*3)
+}
+
+// UpdateText billboard text
+func (billboard *Billboard) UpdateText(text string) {
+	if billboard.font != nil && text != billboard.text {
+		billboard.font.updateTexture(
+			billboard.image,
+			text,
+			billboard.width,
+			billboard.height,
+			billboard.size,
+			billboard.dpi)
+		billboard.text = text
+	}
 }
