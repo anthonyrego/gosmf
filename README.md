@@ -5,7 +5,10 @@ WIP golang media framework
 package main
 
 import (
-	_ "image/png"
+	_ "image/gif"
+	"math"
+
+	"fmt"
 
 	"github.com/anthonyrego/dodge/camera"
 	"github.com/anthonyrego/dodge/font"
@@ -25,27 +28,66 @@ func main() {
 	shader.Use("default")
 
 	updateCamera := initCamera(screen)
+	getCurrentFps := initFpsCounter(screen)
 
-	image, _ := sprite.New("pouch.png", 264, 347)
+	image, _ := sprite.New("sad.gif", 201, 161)
 
-	font.New("VeraMono.ttf")
+	arial, _ := font.New("Arial.ttf")
+
+	buttonsPressed := arial.NewBillboard("Button Pressed 0 times", 500, 150, 10, 300)
+	elapsedTime := arial.NewBillboard("fps: ", 500, 150, 10, 300)
+	buttonCounter := 0
 
 	input.AddListener(input.KeyEscape, func(event int) {
 		if event == input.Release {
 			screen.SetToClose()
 		}
 	})
+	input.AddListener(input.KeyEnter, func(event int) {
+		if event == input.Press {
+			buttonCounter++
+			buttonsPressed.UpdateText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
+		}
+	})
+
 	for screen.IsActive() {
 		updateCamera()
+		elapsedTime.UpdateText(fmt.Sprintf("fps: %d", getCurrentFps()))
+		elapsedTime.Draw(0, 500, 0)
+		buttonsPressed.Draw(0, 350, 0)
 		image.Draw(0, 0, 200)
-		image.Draw(150, 150, 10)
 		screen.BlitScreen()
+	}
+}
+
+func initFpsCounter(screen *window.Screen) func() int {
+	const fpsBufferSize = 10
+	var fpsBuffer [fpsBufferSize]int
+	fpsCounter := 0
+	currentFps := 0
+
+	return func() int {
+		if fpsCounter > (fpsBufferSize - 1) {
+			fpsCounter = 0
+			fpsSum := 0
+			for i := 0; i < fpsBufferSize; i++ {
+				fpsSum += fpsBuffer[i]
+			}
+			currentFps = int(math.Ceil((float64(fpsSum) / float64(fpsBufferSize))))
+			if currentFps < 0 {
+				currentFps = 0
+			}
+		}
+
+		fpsBuffer[fpsCounter] = int(1 / screen.GetTimeSinceLastFrame())
+		fpsCounter++
+		return currentFps
 	}
 }
 
 func initCamera(screen *window.Screen) func() {
 	cam1 := camera.New(true)
-	cam1.SetOrtho(screen.Width*2, screen.Height*2, 200)
+	cam1.SetOrtho(screen.Width, screen.Height, 200)
 	cam1.SetPosition2D(0, 0)
 	camx := 0.0
 	camy := 0.0
@@ -66,5 +108,6 @@ func initCamera(screen *window.Screen) func() {
 		cam1.SetPosition2D(float32(camx), float32(camy))
 	}
 }
+
 
 ```
