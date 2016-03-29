@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "image/gif"
+	_ "image/png"
 	"math"
 
 	"fmt"
@@ -18,7 +18,7 @@ func main() {
 	windowWidth := 800
 	windowHeight := 600
 
-	screen := window.New(windowWidth, windowHeight, true, "Dodge Example")
+	screen := window.New(windowWidth, windowHeight, true, false, "Dodge Example")
 	defer screen.Destroy()
 
 	shader.Use("default")
@@ -26,12 +26,12 @@ func main() {
 	updateCamera := initCamera(screen)
 	getCurrentFps := initFpsCounter(screen)
 
-	image, _ := sprite.New("sad.gif", 201, 161)
+	image, _ := sprite.New("box.png", 16, 16)
 
-	arial, _ := font.New("Arial.ttf")
+	ttf, _ := font.New("Roboto-Regular.ttf")
 
-	buttonsPressed := arial.NewBillboard("Button Pressed 0 times", 500, 150, 10, 300)
-	fpsDisplay := arial.NewBillboard("fps: ", 500, 150, 10, 300)
+	buttonsPressed := ttf.NewBillboard("Button Pressed 0 times", 500, 150, 8, 300)
+	fpsDisplay := ttf.NewBillboard("fps: ", 500, 150, 8, 300)
 	buttonCounter := 0
 
 	input.AddListener(input.KeyEscape, func(event int) {
@@ -57,7 +57,7 @@ func main() {
 }
 
 func initFpsCounter(screen *window.Screen) func() int {
-	const fpsBufferSize = 10
+	const fpsBufferSize = 20
 	var fpsBuffer [fpsBufferSize]int
 	fpsCounter := 0
 	currentFps := 0
@@ -66,8 +66,8 @@ func initFpsCounter(screen *window.Screen) func() int {
 		if fpsCounter > (fpsBufferSize - 1) {
 			fpsCounter = 0
 			fpsSum := 0
-			for i := 0; i < fpsBufferSize; i++ {
-				fpsSum += fpsBuffer[i]
+			for _, val := range fpsBuffer {
+				fpsSum += val
 			}
 			currentFps = int(math.Ceil((float64(fpsSum) / float64(fpsBufferSize))))
 			if currentFps < 0 {

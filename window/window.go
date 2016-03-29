@@ -26,13 +26,13 @@ type Screen struct {
 }
 
 // New returns a newly created Screen
-func New(width int, height int, vsync bool, name string) *Screen {
+func New(width int, height int, vsync bool, fullscreen bool, name string) *Screen {
 	s := &Screen{}
-	s.init(width, height, vsync, name)
+	s.init(width, height, vsync, fullscreen, name)
 	return s
 }
 
-func (window *Screen) init(width int, height int, vsync bool, name string) {
+func (window *Screen) init(width int, height int, vsync bool, fullscreen bool, name string) {
 	err := glfw.Init()
 	if err != nil {
 		log.Fatalln("failed to initialize glfw:", err)
@@ -43,7 +43,12 @@ func (window *Screen) init(width int, height int, vsync bool, name string) {
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
-	win, err := glfw.CreateWindow(width, height, name, nil, nil)
+
+	var monitor *glfw.Monitor
+	if fullscreen {
+		monitor = glfw.GetPrimaryMonitor()
+	}
+	win, err := glfw.CreateWindow(width, height, name, monitor, nil)
 	if err != nil {
 		panic(err)
 	}
