@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	_ "image/png"
 	"math"
 
@@ -30,8 +31,10 @@ func main() {
 
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
-	buttonsPressed := ttf.NewBillboard("Button Pressed 0 times", 500, 150, 8, 300)
-	fpsDisplay := ttf.NewBillboard("fps: ", 500, 150, 8, 300)
+	buttonsPressed := ttf.NewBillboard("Button Pressed 0 times",
+		500, 150, 8, 300, color.RGBA{0, 0, 0, 255})
+	fpsDisplay := ttf.NewBillboard("fps: ",
+		500, 150, 8, 300, color.RGBA{255, 104, 61, 255})
 	buttonCounter := 0
 
 	input.AddListener(input.KeyEscape, func(event int) {

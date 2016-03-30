@@ -1,6 +1,8 @@
 package font
 
 import (
+	"image/color"
+
 	"github.com/anthonyrego/dodge/shader"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -14,15 +16,16 @@ type Billboard struct {
 	text   string
 	width  int
 	height int
+	rgba   color.Color
 	size   float64
 	dpi    float64
 }
 
 // NewBillboard creates a 2D billboard for rendering
-func (font *Font) NewBillboard(text string, width int, height int, size float64, dpi float64) *Billboard {
+func (font *Font) NewBillboard(text string, width int, height int, size float64, dpi float64, color color.Color) *Billboard {
 	b := &Billboard{}
 
-	image := font.createTexture(text, width, height, size, dpi)
+	image := font.createTexture(text, width, height, size, dpi, color)
 
 	b.width = width
 	b.height = height
@@ -30,6 +33,7 @@ func (font *Font) NewBillboard(text string, width int, height int, size float64,
 	b.dpi = dpi
 	b.text = text
 	b.font = font
+	b.rgba = color
 
 	var vao uint32
 
@@ -96,7 +100,8 @@ func (billboard *Billboard) UpdateText(text string) {
 			billboard.width,
 			billboard.height,
 			billboard.size,
-			billboard.dpi)
+			billboard.dpi,
+			billboard.rgba)
 		billboard.text = text
 	}
 }

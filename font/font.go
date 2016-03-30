@@ -2,6 +2,7 @@ package font
 
 import (
 	"image"
+	"image/color"
 	"image/draw"
 	"io/ioutil"
 	"log"
@@ -38,16 +39,19 @@ func New(file string) (*Font, error) {
 	return fontList[file], nil
 }
 
-func (font *Font) createTexture(text string, width int, height int, size float64, dpi float64) uint32 {
+func (font *Font) createTexture(text string, width int, height int, size float64, dpi float64, rgba color.Color) uint32 {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	draw.Draw(img, img.Bounds(), image.Transparent, image.ZP, draw.Src)
+
+	r, g, b, _ := rgba.RGBA()
+	draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{uint8(r), uint8(g), uint8(b), 0}), image.ZP, draw.Src)
 
 	context.SetDst(img)
 	context.SetClip(img.Bounds())
-	context.SetSrc(image.Black)
+
+	context.SetSrc(image.NewUniform(rgba))
 
 	context.SetFontSize(size)
 	context.SetDPI(dpi)
@@ -63,6 +67,7 @@ func (font *Font) createTexture(text string, width int, height int, size float64
 
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, tex)
+
 	context.DrawString(text, freetype.Pt(0, height/2))
 	gl.TexImage2D(
 		gl.TEXTURE_2D,
@@ -78,16 +83,17 @@ func (font *Font) createTexture(text string, width int, height int, size float64
 	return tex
 }
 
-func (font *Font) updateTexture(texture uint32, text string, width int, height int, size float64, dpi float64) {
+func (font *Font) updateTexture(texture uint32, text string, width int, height int, size float64, dpi float64, rgba color.Color) {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	draw.Draw(img, img.Bounds(), image.Transparent, image.ZP, draw.Src)
+	r, g, b, _ := rgba.RGBA()
+	draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{uint8(r), uint8(g), uint8(b), 0}), image.ZP, draw.Src)
 
 	context.SetDst(img)
 	context.SetClip(img.Bounds())
-	context.SetSrc(image.Black)
+	context.SetSrc(image.NewUniform(rgba))
 
 	context.SetFontSize(size)
 	context.SetDPI(dpi)
