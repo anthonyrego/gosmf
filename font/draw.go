@@ -91,7 +91,7 @@ func (billboard *Billboard) Draw(x float32, y float32, z float32) {
 	gl.DrawArrays(gl.TRIANGLES, 0, 1*2*3)
 }
 
-// UpdateText billboard text
+// UpdateText updates the billboard text
 func (billboard *Billboard) UpdateText(text string) {
 	if billboard.font != nil && text != billboard.text {
 		billboard.font.updateTexture(
@@ -103,5 +103,20 @@ func (billboard *Billboard) UpdateText(text string) {
 			billboard.dpi,
 			billboard.rgba)
 		billboard.text = text
+	}
+}
+
+// UpdateColor updates the color of the text
+func (billboard *Billboard) UpdateColor(color color.Color) {
+	if billboard.font != nil && color != billboard.rgba {
+		billboard.font.updateTexture(
+			billboard.image,
+			billboard.text,
+			billboard.width,
+			billboard.height,
+			billboard.size,
+			billboard.dpi,
+			color)
+		billboard.rgba = color
 	}
 }
