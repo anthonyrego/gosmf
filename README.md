@@ -6,7 +6,8 @@ WIP golang media framework
 package main
 
 import (
-	_ "image/gif"
+	"image/color"
+	_ "image/png"
 	"math"
 
 	"fmt"
@@ -23,7 +24,7 @@ func main() {
 	windowWidth := 800
 	windowHeight := 600
 
-	screen := window.New(windowWidth, windowHeight, true, "Dodge Example")
+	screen := window.New(windowWidth, windowHeight, true, false, "Dodge Example")
 	defer screen.Destroy()
 
 	shader.Use("default")
@@ -31,30 +32,33 @@ func main() {
 	updateCamera := initCamera(screen)
 	getCurrentFps := initFpsCounter(screen)
 
-	image, _ := sprite.New("sad.gif", 201, 161)
+	image, _ := sprite.New("box.png", 16, 16)
 
-	arial, _ := font.New("Arial.ttf")
+	ttf, _ := font.New("Roboto-Regular.ttf")
 
-	buttonsPressed := arial.NewBillboard("Button Pressed 0 times", 500, 150, 10, 300)
-	elapsedTime := arial.NewBillboard("fps: ", 500, 150, 10, 300)
-	buttonCounter := 0
+	buttonsPressed := ttf.NewBillboard("Button Pressed 0 times",
+		500, 150, 8, 300, color.RGBA{0, 0, 0, 255})
+	fpsDisplay := ttf.NewBillboard("fps: ",
+		500, 150, 8, 300, color.RGBA{255, 104, 61, 255})
 
 	input.AddListener(input.KeyEscape, func(event int) {
 		if event == input.Release {
 			screen.SetToClose()
 		}
 	})
+
+	buttonCounter := 0
 	input.AddListener(input.KeyEnter, func(event int) {
 		if event == input.Press {
 			buttonCounter++
-			buttonsPressed.UpdateText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
+			buttonsPressed.SetText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
 		}
 	})
 
 	for screen.IsActive() {
 		updateCamera()
-		elapsedTime.UpdateText(fmt.Sprintf("fps: %d", getCurrentFps()))
-		elapsedTime.Draw(0, 500, 0)
+		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
+		fpsDisplay.Draw(0, 500, 0)
 		buttonsPressed.Draw(0, 350, 0)
 		image.Draw(0, 0, 200)
 		screen.BlitScreen()
@@ -62,7 +66,7 @@ func main() {
 }
 
 func initFpsCounter(screen *window.Screen) func() int {
-	const fpsBufferSize = 10
+	const fpsBufferSize = 20
 	var fpsBuffer [fpsBufferSize]int
 	fpsCounter := 0
 	currentFps := 0
@@ -71,8 +75,8 @@ func initFpsCounter(screen *window.Screen) func() int {
 		if fpsCounter > (fpsBufferSize - 1) {
 			fpsCounter = 0
 			fpsSum := 0
-			for i := 0; i < fpsBufferSize; i++ {
-				fpsSum += fpsBuffer[i]
+			for _, val := range fpsBuffer {
+				fpsSum += val
 			}
 			currentFps = int(math.Ceil((float64(fpsSum) / float64(fpsBufferSize))))
 			if currentFps < 0 {
@@ -109,6 +113,5 @@ func initCamera(screen *window.Screen) func() {
 		cam1.SetPosition2D(float32(camx), float32(camy))
 	}
 }
-
 
 ```

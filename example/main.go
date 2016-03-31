@@ -35,23 +35,24 @@ func main() {
 		500, 150, 8, 300, color.RGBA{0, 0, 0, 255})
 	fpsDisplay := ttf.NewBillboard("fps: ",
 		500, 150, 8, 300, color.RGBA{255, 104, 61, 255})
-	buttonCounter := 0
 
 	input.AddListener(input.KeyEscape, func(event int) {
 		if event == input.Release {
 			screen.SetToClose()
 		}
 	})
+
+	buttonCounter := 0
 	input.AddListener(input.KeyEnter, func(event int) {
 		if event == input.Press {
 			buttonCounter++
-			buttonsPressed.UpdateText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
+			buttonsPressed.SetText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
 		}
 	})
 
 	for screen.IsActive() {
 		updateCamera()
-		fpsDisplay.UpdateText(fmt.Sprintf("fps: %d", getCurrentFps()))
+		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
 		fpsDisplay.Draw(0, 500, 0)
 		buttonsPressed.Draw(0, 350, 0)
 		image.Draw(0, 0, 200)

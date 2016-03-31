@@ -21,6 +21,13 @@ func AddListener(key int, callback func(event int)) {
 	listenerList[key] = &listener{callback}
 }
 
+// DestroyListener removes listener for a key
+func DestroyListener(key int) {
+	if _, ok := listenerList[key]; ok {
+		listenerList[key].callback = func(event int) {}
+	}
+}
+
 // AttachInputToWindow will enable the input callbacks on specified window
 func AttachInputToWindow(win *glfw.Window) {
 	win.SetKeyCallback(callback)
