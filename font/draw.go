@@ -10,22 +10,27 @@ import (
 
 // Billboard is an object for font rendering
 type Billboard struct {
-	image  uint32
-	vao    uint32
-	font   *Font
-	text   string
-	width  int
-	height int
-	rgba   color.Color
-	size   float64
-	dpi    float64
+	image     uint32
+	vao       uint32
+	font      *Font
+	text      string
+	width     int
+	height    int
+	rgba      color.Color
+	size      float64
+	dpi       float64
+	texWidth  int
+	texHeight int
 }
 
 // NewBillboard creates a 2D billboard for rendering
-func (font *Font) NewBillboard(text string, width int, height int, size float64, dpi float64, color color.Color) *Billboard {
+func (font *Font) NewBillboard(text string, width int, height int, scale int, size float64, dpi float64, color color.Color) *Billboard {
 	b := &Billboard{}
 
-	image := font.createTexture(text, width, height, size, dpi, color)
+	b.texWidth = width * scale
+	b.texHeight = height * scale
+
+	image := font.createTexture(text, b.texWidth, b.texHeight, size, dpi, color)
 
 	b.width = width
 	b.height = height
@@ -73,12 +78,11 @@ func (font *Font) NewBillboard(text string, width int, height int, size float64,
 	return b
 }
 
-// Draw will draw the sprite in the x,y and z
+// Draw will draw the billvboard in the x,y and z
 func (billboard *Billboard) Draw(x float32, y float32, z float32) {
 
 	model := mgl32.Translate3D(x, y, z)
-	// remember this is in radians!
-	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
+
 	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.Model, 1, false, &model[0])
 	}
@@ -97,8 +101,8 @@ func (billboard *Billboard) SetText(text string) {
 		billboard.font.updateTexture(
 			billboard.image,
 			text,
-			billboard.width,
-			billboard.height,
+			billboard.texWidth,
+			billboard.texHeight,
 			billboard.size,
 			billboard.dpi,
 			billboard.rgba)
@@ -112,8 +116,8 @@ func (billboard *Billboard) SetColor(color color.Color) {
 		billboard.font.updateTexture(
 			billboard.image,
 			billboard.text,
-			billboard.width,
-			billboard.height,
+			billboard.texWidth,
+			billboard.texHeight,
 			billboard.size,
 			billboard.dpi,
 			color)

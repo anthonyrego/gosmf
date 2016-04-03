@@ -32,9 +32,9 @@ func main() {
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
 	buttonsPressed := ttf.NewBillboard("Button Pressed 0 times",
-		500, 150, 8, 300, color.RGBA{0, 0, 0, 255})
+		500, 150, 2, 20, 300, color.RGBA{255, 255, 255, 255})
 	fpsDisplay := ttf.NewBillboard("fps: ",
-		500, 150, 8, 300, color.RGBA{255, 104, 61, 255})
+		500, 150, 2, 32, 300, color.RGBA{255, 255, 255, 255})
 
 	input.AddListener(input.KeyEscape, func(event int) {
 		if event == input.Release {
