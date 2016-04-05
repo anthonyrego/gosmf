@@ -19,26 +19,34 @@ func main() {
 	windowWidth := 800
 	windowHeight := 600
 
-	screen := window.New(windowWidth, windowHeight, true, false, "Dodge Example")
-	defer screen.Destroy()
+	screen := window.New(windowWidth, windowHeight, false, "Dodge Example")
+	defer window.Cleanup()
 
 	shader.Use("default")
 
 	updateCamera := initCamera(screen)
 	getCurrentFps := initFpsCounter(screen)
 
-	image, _ := sprite.New("box.png", 16, 16)
+	image, _ := sprite.New("box.png", 512, 512)
 
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
 	buttonsPressed := ttf.NewBillboard("Button Pressed 0 times",
 		500, 150, 2, 20, 300, color.RGBA{255, 255, 255, 255})
 	fpsDisplay := ttf.NewBillboard("fps: ",
-		500, 150, 2, 32, 300, color.RGBA{255, 255, 255, 255})
+		500, 250, 2, 64, 300, color.RGBA{255, 255, 255, 255})
 
 	input.AddListener(input.KeyEscape, func(event int) {
 		if event == input.Release {
 			screen.SetToClose()
+		}
+	})
+
+	verticalSync := true
+	input.AddListener(input.KeyV, func(event int) {
+		if event == input.Release {
+			screen.SetVerticalSync(!verticalSync)
+			verticalSync = !verticalSync
 		}
 	})
 
@@ -53,9 +61,9 @@ func main() {
 	for screen.IsActive() {
 		updateCamera()
 		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
-		fpsDisplay.Draw(0, 500, 0)
-		buttonsPressed.Draw(0, 350, 0)
-		image.Draw(0, 0, 200)
+		fpsDisplay.Draw(0, 300, 0)
+		buttonsPressed.Draw(0, 200, 0)
+		image.Draw(0, 500, 200)
 		screen.BlitScreen()
 	}
 }

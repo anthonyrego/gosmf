@@ -23,16 +23,12 @@ type Screen struct {
 	startTime   time.Time
 	frameTime   float64
 	elapsedTime float64
+	name        string
 }
 
 // New returns a newly created Screen
-func New(width int, height int, vsync bool, fullscreen bool, name string) *Screen {
-	s := &Screen{}
-	s.init(width, height, vsync, fullscreen, name)
-	return s
-}
-
-func (window *Screen) init(width int, height int, vsync bool, fullscreen bool, name string) {
+func New(width int, height int, fullscreen bool, name string) *Screen {
+	window := &Screen{}
 	err := glfw.Init()
 	if err != nil {
 		log.Fatalln("failed to initialize glfw:", err)
@@ -53,12 +49,7 @@ func (window *Screen) init(width int, height int, vsync bool, fullscreen bool, n
 		panic(err)
 	}
 	win.MakeContextCurrent()
-
-	if vsync {
-		glfw.SwapInterval(1)
-	} else {
-		glfw.SwapInterval(0)
-	}
+	glfw.SwapInterval(1)
 
 	if err := gl.Init(); err != nil {
 		panic(err)
@@ -70,17 +61,20 @@ func (window *Screen) init(width int, height int, vsync bool, fullscreen bool, n
 	// Configure global settings
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
 	gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	window.context = win
 	window.Width = width
 	window.Height = height
+	window.name = name
 	window.context.SwapBuffers()
 
 	input.AttachInputToWindow(window.context)
 
 	window.startTime = time.Now()
 	window.frameTime = time.Since(window.startTime).Seconds()
+	return window
 }
 
 // IsActive returns the status of the window
@@ -113,6 +107,20 @@ func (window *Screen) GetTime() time.Duration {
 	return time.Since(window.startTime)
 }
 
+// SetClearColor sets the color when the screen is cleared for redrawing
+func (window *Screen) SetClearColor(r float32, g float32, b float32, a float32) {
+	gl.ClearColor(r, g, b, a)
+}
+
+// SetVerticalSync sets the vertical sync status
+func (window *Screen) SetVerticalSync(enabled bool) {
+	if enabled {
+		glfw.SwapInterval(1)
+	} else {
+		glfw.SwapInterval(0)
+	}
+}
+
 // AmountPerSecond returns the adjusted value for a per second value based on frame time
 // This really needs a better function name
 func (window *Screen) AmountPerSecond(persecond float64) float64 {
@@ -122,5 +130,9 @@ func (window *Screen) AmountPerSecond(persecond float64) float64 {
 // Destroy cleans up the window
 func (window *Screen) Destroy() {
 	window.context.Destroy()
+}
+
+// Cleanup should be called before the program closes
+func Cleanup() {
 	glfw.Terminate()
 }
