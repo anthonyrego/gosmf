@@ -1,5 +1,5 @@
 /*
-Package dodge is a work in progress simple media framework in go
+Package gosmf, Go Simple Media Framework, is a work in progress simple media framework in go
 
 A simple example that creates a window with input and draws a 2D sprite
 W,A,S,D moves the 2D camera around and ESC will exit the program

@@ -1,7 +1,7 @@
 package camera
 
 import (
-	"github.com/anthonyrego/dodge/shader"
+	"github.com/anthonyrego/gosmf/shader"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 )

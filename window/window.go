@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/anthonyrego/dodge/input"
+	"github.com/anthonyrego/gosmf/input"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
