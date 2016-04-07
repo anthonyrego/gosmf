@@ -14,19 +14,19 @@ Enter will increase the text counter
 
   	"fmt"
 
-  	"github.com/anthonyrego/dodge/camera"
-  	"github.com/anthonyrego/dodge/font"
-  	"github.com/anthonyrego/dodge/input"
-  	"github.com/anthonyrego/dodge/shader"
-  	"github.com/anthonyrego/dodge/sprite"
-  	"github.com/anthonyrego/dodge/window"
+  	"github.com/anthonyrego/gosmf/camera"
+  	"github.com/anthonyrego/gosmf/font"
+  	"github.com/anthonyrego/gosmf/input"
+  	"github.com/anthonyrego/gosmf/shader"
+  	"github.com/anthonyrego/gosmf/sprite"
+  	"github.com/anthonyrego/gosmf/window"
   )
 
   func main() {
   	windowWidth := 800
   	windowHeight := 600
 
-  	screen := window.New(windowWidth, windowHeight, true, false, "Dodge Example")
+  	screen := window.New(windowWidth, windowHeight, true, false, "gosmf example")
   	defer screen.Destroy()
 
   	shader.Use("default")
@@ -118,4 +118,4 @@ Enter will increase the text counter
 
 
 */
-package dodge
+package gosmf

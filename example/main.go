@@ -19,7 +19,7 @@ func main() {
 	windowWidth := 800
 	windowHeight := 600
 
-	screen := window.New(windowWidth, windowHeight, false, "Dodge Example")
+	screen := window.New(windowWidth, windowHeight, false, "gosmf example")
 	defer window.Cleanup()
 
 	shader.Use("default")
