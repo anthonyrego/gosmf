@@ -21,9 +21,10 @@ type Screen struct {
 	Width       int
 	Height      int
 	startTime   time.Time
-	frameTime   float64
 	elapsedTime float64
+	frameTime   time.Time
 	name        string
+	vsync       bool
 }
 
 // New returns a newly created Screen
@@ -49,7 +50,6 @@ func New(width int, height int, fullscreen bool, name string) *Screen {
 		panic(err)
 	}
 	win.MakeContextCurrent()
-	glfw.SwapInterval(1)
 
 	if err := gl.Init(); err != nil {
 		panic(err)
@@ -73,7 +73,9 @@ func New(width int, height int, fullscreen bool, name string) *Screen {
 	input.AttachInputToWindow(window.context)
 
 	window.startTime = time.Now()
-	window.frameTime = time.Since(window.startTime).Seconds()
+	window.frameTime = time.Now()
+	glfw.SwapInterval(1)
+	window.vsync = true
 	return window
 }
 
@@ -92,9 +94,8 @@ func (window *Screen) BlitScreen() {
 	window.context.SwapBuffers()
 	glfw.PollEvents()
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	time := window.GetTime().Seconds()
-	window.elapsedTime = time - window.frameTime
-	window.frameTime = time
+	window.elapsedTime = time.Since(window.frameTime).Seconds()
+	window.frameTime = time.Now()
 }
 
 // GetTimeSinceLastFrame will return the time since the last frame was drawn.
@@ -119,6 +120,7 @@ func (window *Screen) SetVerticalSync(enabled bool) {
 	} else {
 		glfw.SwapInterval(0)
 	}
+	window.vsync = enabled
 }
 
 // AmountPerSecond returns the adjusted value for a per second value based on frame time
