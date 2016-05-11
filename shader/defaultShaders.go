@@ -1,6 +1,6 @@
 package shader
 
-var defaultShaders = map[string]Shader{
+var shaderList = map[string]Shader{
 	"default": Shader{
 		vert: `
   	#version 330

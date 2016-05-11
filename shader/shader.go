@@ -48,11 +48,40 @@ func (shader *Shader) Activate() {
 	gl.UseProgram(shader.id)
 }
 
-// Use will load a default shader from a map of shaders
+// Use will set active a shader by name from a map of preloaded plus user generated shaders
 func Use(shaderName string) (shader *Shader) {
-	if shader := defaultShaders[shaderName]; shader.vert != "" {
+	if shader := shaderList[shaderName]; shader.vert != "" {
 		shader.Activate()
 		return &shader
+	}
+	return nil
+}
+
+// New creates a new shader object. The shader can later be activated by the given name with the Use function
+func New(name, vertexShaderSource, fragmentShaderSource string) error {
+	if _, found := shaderList[name]; found {
+		return fmt.Errorf("Shader already exists: %v", name)
+	}
+	program, err := newProgram(vertexShaderSource, fragmentShaderSource)
+	if err != nil {
+		return err
+	}
+	shader := Shader{}
+	shader.id = program
+	shader.loaded = true
+	shader.vert = vertexShaderSource
+	shader.frag = fragmentShaderSource
+
+	gl.UseProgram(shader.id)
+
+	shader.Projection = gl.GetUniformLocation(program, gl.Str("projection\x00"))
+	shader.Camera = gl.GetUniformLocation(program, gl.Str("camera\x00"))
+	shader.Model = gl.GetUniformLocation(program, gl.Str("model\x00"))
+
+	shaderList[name] = shader
+
+	if activeShader := GetActive(); activeShader != nil {
+		activeShader.Activate()
 	}
 	return nil
 }
