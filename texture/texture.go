@@ -14,7 +14,9 @@ var textureList = map[string]*Texture{}
 
 // Texture object
 type Texture struct {
-	id uint32
+	id     uint32
+	Width  int
+	Height int
 }
 
 // New returns a newly created Texture
@@ -69,6 +71,8 @@ func (t *Texture) create(file string) error {
 		gl.Ptr(rgba.Pix))
 
 	t.id = tex
+	t.Width = rgba.Rect.Size().X
+	t.Height = rgba.Rect.Size().Y
 	return nil
 }
 

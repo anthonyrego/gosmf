@@ -23,7 +23,7 @@ func New(file string, width int, height int) (*Sprite, error) {
 		return sprite, nil
 	}
 	s := &Sprite{}
-	err := s.create(file, width, height)
+	err := s.create(file, width, height, 0, 0)
 	if err != nil {
 		log.Fatalln("failed to create sprite:", err)
 		return nil, err
@@ -32,7 +32,22 @@ func New(file string, width int, height int) (*Sprite, error) {
 	return spriteList[file], nil
 }
 
-func (sprite *Sprite) create(file string, width int, height int) error {
+// NewSheet creates and returns a new Sprite object that has multiple frames based on the width and height
+func NewSheet(file string, width int, height int, frames int, framesPerLine int) (*Sprite, error) {
+	if sprite, found := spriteList[file]; found {
+		return sprite, nil
+	}
+	s := &Sprite{}
+	err := s.create(file, width, height, frames, framesPerLine)
+	if err != nil {
+		log.Fatalln("failed to create sprite:", err)
+		return nil, err
+	}
+	spriteList[file] = s
+	return spriteList[file], nil
+}
+
+func (sprite *Sprite) create(file string, width int, height int, frames int, framesPerLine int) error {
 	image, err := texture.New(file)
 	if err != nil {
 		return err
@@ -50,14 +65,39 @@ func (sprite *Sprite) create(file string, width int, height int) error {
 	w := float32(width)
 	h := float32(height)
 
-	spriteVertices := []float32{
-		w, h, 0.0, 1.0, 1.0,
-		0.0, 0.0, 0.0, 0.0, 0.0,
-		0.0, h, 0.0, 0.0, 1.0,
+	frameWidth := float32(width) / float32(image.Width)
+	frameHeight := float32(height) / float32(image.Height)
 
-		w, h, 0.0, 1.0, 1.0,
-		0.0, 0.0, 0.0, 0.0, 0.0,
-		w, 0.0, 0.0, 1.0, 0.0,
+	var spriteVertices []float32
+
+	if frames == 0 {
+		spriteVertices = []float32{
+			w, h, 0.0, 1.0, 1.0,
+			0.0, 0.0, 0.0, 0.0, 0.0,
+			0.0, h, 0.0, 0.0, 1.0,
+
+			w, h, 0.0, 1.0, 1.0,
+			0.0, 0.0, 0.0, 0.0, 0.0,
+			w, 0.0, 0.0, 1.0, 0.0,
+		}
+	} else {
+		for i := 0; i < frames; i++ {
+			frameX := float32(i%framesPerLine) * frameWidth
+			frameY := float32(i/framesPerLine) * frameHeight
+			frameW := frameWidth + frameX
+			frameH := frameHeight + frameY
+
+			spriteVertices = append(spriteVertices,
+				[]float32{
+					w, h, 0.0, frameW, frameH,
+					0.0, 0.0, 0.0, frameX, frameY,
+					0.0, h, 0.0, frameX, frameH,
+
+					w, h, 0.0, frameW, frameH,
+					0.0, 0.0, 0.0, frameX, frameY,
+					w, 0.0, 0.0, frameW, frameY,
+				}...)
+		}
 	}
 
 	gl.BufferData(gl.ARRAY_BUFFER, len(spriteVertices)*4, gl.Ptr(spriteVertices), gl.STATIC_DRAW)
@@ -90,5 +130,22 @@ func (sprite *Sprite) Draw(x float32, y float32, z float32) {
 
 	sprite.image.Bind()
 
-	gl.DrawArrays(gl.TRIANGLES, 0, 1*2*3)
+	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+}
+
+// DrawFrame will draw the sprite in the x,y and z with the specified frame from a spritesheet
+func (sprite *Sprite) DrawFrame(x float32, y float32, z float32, frame int) {
+
+	model := mgl32.Translate3D(x, y, z)
+	// remember this is in radians!
+	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
+	if shader := shader.GetActive(); shader != nil {
+		gl.UniformMatrix4fv(shader.Model, 1, false, &model[0])
+	}
+
+	gl.BindVertexArray(sprite.vao)
+
+	sprite.image.Bind()
+
+	gl.DrawArrays(gl.TRIANGLES, int32(frame*6), 6)
 }

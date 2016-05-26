@@ -27,7 +27,7 @@ func main() {
 	updateCamera := initCamera(screen)
 	getCurrentFps := initFpsCounter(screen)
 
-	image, _ := sprite.New("box.png", 512, 512)
+	image, _ := sprite.NewSheet("box.png", 4, 16, 4, 4)
 
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
@@ -63,7 +63,10 @@ func main() {
 		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
 		fpsDisplay.Draw(0, 300, 0)
 		buttonsPressed.Draw(0, 200, 0)
-		image.Draw(0, 500, 200)
+		image.DrawFrame(0, 500, 200, 0)
+		image.DrawFrame(4, 500, 200, 1)
+		image.DrawFrame(8, 500, 200, 2)
+		image.DrawFrame(12, 500, 200, 3)
 		screen.BlitScreen()
 	}
 }
