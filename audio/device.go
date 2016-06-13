@@ -1,11 +1,12 @@
 package audio
 
 /*
-#cgo LDFLAGS: -framework OpenAL
-#include <CoreFoundation/CoreFoundation.h>
-#include <AudioToolbox/AudioToolbox.h>
-#import <OpenAL/al.h>
-#import <OpenAL/alc.h>
+#ifdef _GOSMF_OSX_
+  #include <CoreFoundation/CoreFoundation.h>
+#endif
+
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
 
 ALCcontext *context;
 ALCdevice *device;
