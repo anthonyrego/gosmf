@@ -1,15 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	_ "image/png"
 	"math"
 
-	"fmt"
-
+	"github.com/anthonyrego/gosmf/audio"
 	"github.com/anthonyrego/gosmf/camera"
 	"github.com/anthonyrego/gosmf/font"
-	"github.com/anthonyrego/gosmf/input"
 	"github.com/anthonyrego/gosmf/shader"
 	"github.com/anthonyrego/gosmf/sprite"
 	"github.com/anthonyrego/gosmf/window"
@@ -22,48 +21,54 @@ func main() {
 	screen := window.New(windowWidth, windowHeight, false, "gosmf example")
 	defer window.Cleanup()
 
+	audio.Init()
+	defer audio.Cleanup()
+
 	shader.Use("default")
 
 	updateCamera := initCamera(screen)
 	getCurrentFps := initFpsCounter(screen)
 
 	image, _ := sprite.New("box.png", 16, 16)
-
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
-	buttonsPressed := ttf.NewBillboard("Button Pressed 0 times",
-		500, 150, 2, 20, 300, color.RGBA{255, 255, 255, 255})
 	fpsDisplay := ttf.NewBillboard("fps: ",
 		500, 250, 2, 64, 300, color.RGBA{255, 255, 255, 255})
+	/*
 
-	input.AddListener(input.KeyEscape, func(event int) {
-		if event == input.Release {
-			screen.SetToClose()
-		}
-	})
+			buttonsPressed := ttf.NewBillboard("Button Pressed 0 times",
+				500, 150, 2, 20, 300, color.RGBA{255, 255, 255, 255})
 
-	verticalSync := true
-	input.AddListener(input.KeyV, func(event int) {
-		if event == input.Release {
-			screen.SetVerticalSync(!verticalSync)
-			verticalSync = !verticalSync
-		}
-	})
+		input.AddListener(input.KeyEscape, func(event int) {
+				if event == input.Release {
+					screen.SetToClose()
+				}
+			})
 
-	buttonCounter := 0
-	input.AddListener(input.KeyEnter, func(event int) {
-		if event == input.Press {
-			buttonCounter++
-			buttonsPressed.SetText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
-		}
-	})
+			verticalSync := true
+			input.AddListener(input.KeyV, func(event int) {
+				if event == input.Release {
+					screen.SetVerticalSync(!verticalSync)
+					verticalSync = !verticalSync
+				}
+			})
+
+			buttonCounter := 0
+			input.AddListener(input.KeyEnter, func(event int) {
+				if event == input.Press {
+					buttonCounter++
+					buttonsPressed.SetText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
+				}
+			})*/
 
 	for screen.IsActive() {
 		updateCamera()
+		image.Draw(0, 50, 0, 50)
 		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
 		fpsDisplay.Draw(0, 300, 0)
-		buttonsPressed.Draw(0, 200, 0)
-		image.Draw(0, 500, 0, 50)
+		/*
+			buttonsPressed.Draw(0, 200, 0)
+		*/
 		screen.BlitScreen()
 	}
 }
@@ -99,9 +104,9 @@ func initCamera(screen *window.Screen) func() {
 	cam1.SetPosition2D(0, 0)
 	camx := 0.0
 	camy := 0.0
-	speed := 300.0
+	//speed := 300.0
 	return func() {
-		if input.GetKeyEventState(input.KeyA) == input.Press {
+		/*if input.GetKeyEventState(input.KeyA) == input.Press {
 			camx -= screen.AmountPerSecond(speed)
 		}
 		if input.GetKeyEventState(input.KeyD) == input.Press {
@@ -112,7 +117,7 @@ func initCamera(screen *window.Screen) func() {
 		}
 		if input.GetKeyEventState(input.KeyS) == input.Press {
 			camy += screen.AmountPerSecond(speed)
-		}
+		}*/
 		cam1.SetPosition2D(float32(camx), float32(camy))
 	}
 }
