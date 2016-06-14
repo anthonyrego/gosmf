@@ -38,10 +38,10 @@ void closeAudioDevice()
 */
 import "C"
 
-func InitDevice() {
+func initDevice() {
 	C.openAudioDevice()
 }
 
-func DestroyDevice() {
+func destroyDevice() {
 	C.closeAudioDevice()
 }

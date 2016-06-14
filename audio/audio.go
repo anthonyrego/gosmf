@@ -1,9 +1,9 @@
 package audio
 
 func Init() {
-	InitDevice()
+	initDevice()
 }
 
 func Cleanup() {
-	DestroyDevice()
+	destroyDevice()
 }
