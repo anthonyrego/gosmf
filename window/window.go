@@ -97,8 +97,9 @@ func (window *Screen) SetToClose() {
 // BlitScreen swaps the buffers and clears the screen
 func (window *Screen) BlitScreen() {
 	C.SDL_GL_SwapWindow(window.sdlWindow)
-	C.SDL_PumpEvents()
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+	window.runEventLoop()
 	window.elapsedTime = time.Since(window.frameTime).Seconds()
 	window.frameTime = time.Now()
 }
