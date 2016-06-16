@@ -6,15 +6,14 @@ WIP golang simple media framework
 package main
 
 import (
+	"fmt"
 	"image/color"
 	_ "image/png"
 	"math"
 
-	"fmt"
-
+	"github.com/anthonyrego/gosmf/audio"
 	"github.com/anthonyrego/gosmf/camera"
 	"github.com/anthonyrego/gosmf/font"
-	"github.com/anthonyrego/gosmf/input"
 	"github.com/anthonyrego/gosmf/shader"
 	"github.com/anthonyrego/gosmf/sprite"
 	"github.com/anthonyrego/gosmf/window"
@@ -24,8 +23,12 @@ func main() {
 	windowWidth := 800
 	windowHeight := 600
 
-	screen := window.New(windowWidth, windowHeight, true, false, "gosmf example")
+	screen := window.New(windowWidth, windowHeight, false, "gosmf example")
 	defer screen.Destroy()
+	defer window.Cleanup()
+
+	audio.Init()
+	defer audio.Cleanup()
 
 	shader.Use("default")
 
@@ -33,34 +36,30 @@ func main() {
 	getCurrentFps := initFpsCounter(screen)
 
 	image, _ := sprite.New("box.png", 16, 16)
-
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
-	buttonsPressed := ttf.NewBillboard("Button Pressed 0 times",
-		500, 150, 8, 300, color.RGBA{0, 0, 0, 255})
 	fpsDisplay := ttf.NewBillboard("fps: ",
-		500, 150, 8, 300, color.RGBA{255, 104, 61, 255})
+		500, 250, 2, 64, 300, color.RGBA{255, 255, 255, 255})
 
-	input.AddListener(input.KeyEscape, func(event int) {
-		if event == input.Release {
+	window.AddListener(window.KeyEscape, func(event int) {
+		if event == window.KeyStatePressed {
 			screen.SetToClose()
 		}
 	})
 
-	buttonCounter := 0
-	input.AddListener(input.KeyEnter, func(event int) {
-		if event == input.Press {
-			buttonCounter++
-			buttonsPressed.SetText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
+	verticalSync := true
+	window.AddListener(window.KeyV, func(event int) {
+		if event == window.KeyStateReleased {
+			screen.SetVerticalSync(!verticalSync)
+			verticalSync = !verticalSync
 		}
 	})
 
 	for screen.IsActive() {
 		updateCamera()
+		image.Draw(0, 0, 0, 20)
 		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
-		fpsDisplay.Draw(0, 500, 0)
-		buttonsPressed.Draw(0, 350, 0)
-		image.Draw(0, 0, 200)
+		fpsDisplay.Draw(0, 300, 0)
 		screen.BlitScreen()
 	}
 }
@@ -98,16 +97,16 @@ func initCamera(screen *window.Screen) func() {
 	camy := 0.0
 	speed := 300.0
 	return func() {
-		if input.GetKeyEventState(input.KeyA) == input.Press {
+		if window.GetKeyState(window.KeyA) == window.KeyStatePressed {
 			camx -= screen.AmountPerSecond(speed)
 		}
-		if input.GetKeyEventState(input.KeyD) == input.Press {
+		if window.GetKeyState(window.KeyD) == window.KeyStatePressed {
 			camx += screen.AmountPerSecond(speed)
 		}
-		if input.GetKeyEventState(input.KeyW) == input.Press {
+		if window.GetKeyState(window.KeyW) == window.KeyStatePressed {
 			camy -= screen.AmountPerSecond(speed)
 		}
-		if input.GetKeyEventState(input.KeyS) == input.Press {
+		if window.GetKeyState(window.KeyS) == window.KeyStatePressed {
 			camy += screen.AmountPerSecond(speed)
 		}
 		cam1.SetPosition2D(float32(camx), float32(camy))
