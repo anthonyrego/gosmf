@@ -1,7 +1,6 @@
 package window
 
 /*
-#include <stdlib.h>
 #include <SDL2/SDL.h>
 
 int getKeyState(SDL_Keycode key) {
