@@ -100,6 +100,7 @@ func (window *Screen) BlitScreen() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	window.runEventLoop()
+
 	window.elapsedTime = time.Since(window.frameTime).Seconds()
 	window.frameTime = time.Now()
 }

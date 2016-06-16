@@ -9,16 +9,18 @@ int getEventType(SDL_Event e) {
 int getEventKey(SDL_Event e) {
     return e.key.keysym.sym;
 }
+int getEventKeyState(SDL_Event e) {
+    return e.key.state;
+}
 */
 import "C"
-import (
-	"fmt"
-)
 
 const (
-	WindowQuit int = int(C.SDL_QUIT)
-	KeyPress   int = int(C.SDL_KEYDOWN)
-	KeyRelease int = int(C.SDL_KEYUP)
+	WindowQuit       int = int(C.SDL_QUIT)
+	KeyEventDown     int = int(C.SDL_KEYDOWN)
+	KeyEventUp       int = int(C.SDL_KEYUP)
+	KeyStatePressed  int = int(C.SDL_PRESSED)
+	KeyStateReleased int = int(C.SDL_RELEASED)
 )
 
 func (window *Screen) runEventLoop() {
@@ -30,8 +32,10 @@ func (window *Screen) runEventLoop() {
 			window.SetToClose()
 			break
 
-		case KeyPress, KeyRelease:
-			fmt.Println("Button pressed: ", C.GoString(C.SDL_GetKeyName(C.SDL_Keycode(C.getEventKey(event)))))
+		case KeyEventDown, KeyEventUp:
+			if listener, found := listenerList[int(C.getEventKey(event))]; found {
+				listener.callback(int(C.getEventKeyState(event)))
+			}
 			break
 		}
 	}

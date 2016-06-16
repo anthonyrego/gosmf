@@ -19,6 +19,7 @@ func main() {
 	windowHeight := 600
 
 	screen := window.New(windowWidth, windowHeight, false, "gosmf example")
+	defer screen.Destroy()
 	defer window.Cleanup()
 
 	audio.Init()
@@ -34,41 +35,26 @@ func main() {
 
 	fpsDisplay := ttf.NewBillboard("fps: ",
 		500, 250, 2, 64, 300, color.RGBA{255, 255, 255, 255})
-	/*
 
-			buttonsPressed := ttf.NewBillboard("Button Pressed 0 times",
-				500, 150, 2, 20, 300, color.RGBA{255, 255, 255, 255})
+	window.AddListener(window.KeyEscape, func(event int) {
+		if event == window.KeyStatePressed {
+			screen.SetToClose()
+		}
+	})
 
-		input.AddListener(input.KeyEscape, func(event int) {
-				if event == input.Release {
-					screen.SetToClose()
-				}
-			})
-
-			verticalSync := true
-			input.AddListener(input.KeyV, func(event int) {
-				if event == input.Release {
-					screen.SetVerticalSync(!verticalSync)
-					verticalSync = !verticalSync
-				}
-			})
-
-			buttonCounter := 0
-			input.AddListener(input.KeyEnter, func(event int) {
-				if event == input.Press {
-					buttonCounter++
-					buttonsPressed.SetText(fmt.Sprintf("Button Pressed %d times", buttonCounter))
-				}
-			})*/
+	verticalSync := true
+	window.AddListener(window.KeyV, func(event int) {
+		if event == window.KeyStateReleased {
+			screen.SetVerticalSync(!verticalSync)
+			verticalSync = !verticalSync
+		}
+	})
 
 	for screen.IsActive() {
 		updateCamera()
-		image.Draw(0, 50, 0, 50)
+		image.Draw(0, 0, 0, 20)
 		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
 		fpsDisplay.Draw(0, 300, 0)
-		/*
-			buttonsPressed.Draw(0, 200, 0)
-		*/
 		screen.BlitScreen()
 	}
 }
@@ -104,20 +90,20 @@ func initCamera(screen *window.Screen) func() {
 	cam1.SetPosition2D(0, 0)
 	camx := 0.0
 	camy := 0.0
-	//speed := 300.0
+	speed := 300.0
 	return func() {
-		/*if input.GetKeyEventState(input.KeyA) == input.Press {
+		if window.GetKeyState(window.KeyA) == window.KeyStatePressed {
 			camx -= screen.AmountPerSecond(speed)
 		}
-		if input.GetKeyEventState(input.KeyD) == input.Press {
+		if window.GetKeyState(window.KeyD) == window.KeyStatePressed {
 			camx += screen.AmountPerSecond(speed)
 		}
-		if input.GetKeyEventState(input.KeyW) == input.Press {
+		if window.GetKeyState(window.KeyW) == window.KeyStatePressed {
 			camy -= screen.AmountPerSecond(speed)
 		}
-		if input.GetKeyEventState(input.KeyS) == input.Press {
+		if window.GetKeyState(window.KeyS) == window.KeyStatePressed {
 			camy += screen.AmountPerSecond(speed)
-		}*/
+		}
 		cam1.SetPosition2D(float32(camx), float32(camy))
 	}
 }
