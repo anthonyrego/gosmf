@@ -23,7 +23,7 @@ const (
 	KeyStateReleased int = int(C.SDL_RELEASED)
 )
 
-func (window *Screen) runEventLoop() {
+func (window *Screen) runEventQueue() {
 	var event C.SDL_Event
 
 	for C.SDL_PollEvent(&event) != 0 {

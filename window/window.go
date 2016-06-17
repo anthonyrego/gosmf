@@ -55,6 +55,7 @@ func New(width int, height int, fullscreen bool, name string) *Screen {
 	}
 
 	C.SDL_CreateWindowAndRenderer(C.int(width), C.int(height), C.Uint32(flags), &window.sdlWindow, &window.renderer)
+	C.SDL_SetWindowTitle(window.sdlWindow, C.CString(name))
 	C.SDL_GL_CreateContext(window.sdlWindow)
 
 	if err := gl.Init(); err != nil {
@@ -89,17 +90,23 @@ func (window *Screen) IsActive() bool {
 	return !window.shouldClose
 }
 
+// Update will draw the new frame, run the event queue and check if the window
+// is still active. It will return the window active state.
+func (window *Screen) Update() bool {
+	window.blitScreen()
+	window.runEventQueue()
+	return window.IsActive()
+}
+
 // SetToClose will signal to close the window context
 func (window *Screen) SetToClose() {
 	window.shouldClose = true
 }
 
-// BlitScreen swaps the buffers and clears the screen
-func (window *Screen) BlitScreen() {
+// blitScreen swaps the buffers and clears the screen
+func (window *Screen) blitScreen() {
 	C.SDL_GL_SwapWindow(window.sdlWindow)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-
-	window.runEventLoop()
 
 	window.elapsedTime = time.Since(window.frameTime).Seconds()
 	window.frameTime = time.Now()

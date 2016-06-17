@@ -15,10 +15,8 @@ import (
 )
 
 func main() {
-	windowWidth := 800
-	windowHeight := 600
 
-	screen := window.New(windowWidth, windowHeight, false, "gosmf example")
+	screen := window.New(800, 600, false, "gosmf example")
 	defer screen.Destroy()
 	defer window.Cleanup()
 
@@ -34,28 +32,27 @@ func main() {
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
 	fpsDisplay := ttf.NewBillboard("fps: ",
-		500, 250, 2, 64, 300, color.RGBA{255, 255, 255, 255})
+		500, 250, 1, 32, 300, color.RGBA{255, 255, 255, 255})
 
-	window.AddListener(window.KeyEscape, func(event int) {
+	window.AddKeyListener(window.KeyEscape, func(event int) {
 		if event == window.KeyStatePressed {
 			screen.SetToClose()
 		}
 	})
 
 	verticalSync := true
-	window.AddListener(window.KeyV, func(event int) {
+	window.AddKeyListener(window.KeyV, func(event int) {
 		if event == window.KeyStateReleased {
 			screen.SetVerticalSync(!verticalSync)
 			verticalSync = !verticalSync
 		}
 	})
 
-	for screen.IsActive() {
+	for screen.Update() {
 		updateCamera()
 		image.Draw(0, 0, 0, 20)
 		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
 		fpsDisplay.Draw(0, 300, 0)
-		screen.BlitScreen()
 	}
 }
 

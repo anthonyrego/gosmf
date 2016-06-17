@@ -27,12 +27,12 @@ type listener struct {
 //			fmt.Println("Escape button released!")
 //		}
 //	})
-func AddListener(key int, callback func(event int)) {
+func AddKeyListener(key int, callback func(event int)) {
 	listenerList[key] = &listener{callback}
 }
 
 // DestroyListener removes listener for a key
-func DestroyListener(key int) {
+func DestroyKeyListener(key int) {
 	if _, ok := listenerList[key]; ok {
 		listenerList[key].callback = func(event int) {}
 	}
