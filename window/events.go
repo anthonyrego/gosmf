@@ -7,7 +7,7 @@ int getEventType(SDL_Event e) {
     return e.type;
 }
 int getEventKey(SDL_Event e) {
-    return e.key.keysym.sym;
+    return e.key.keysym.scancode;
 }
 int getEventKeyState(SDL_Event e) {
     return e.key.state;

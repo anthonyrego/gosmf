@@ -3,11 +3,10 @@ package window
 /*
 #include <SDL2/SDL.h>
 
-int getKeyState(SDL_Keycode key) {
+int getKeyState(int key) {
   const Uint8 *state = SDL_GetKeyboardState(NULL);
-  SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
 
-  if (state[scancode]){
+  if (state[key]){
     return SDL_PRESSED;
   }
   return SDL_RELEASED;
@@ -21,7 +20,7 @@ type listener struct {
 	callback func(event int)
 }
 
-// AddListener creates a new key listener, only the last listener for a button will be honored
+// AddKeyListener creates a new key listener, only the last listener for a button will be honored
 //	input.AddListener(input.KeyEscape, func(event int) {
 //		if event == input.Release {
 //			fmt.Println("Escape button released!")
@@ -31,7 +30,7 @@ func AddKeyListener(key int, callback func(event int)) {
 	listenerList[key] = &listener{callback}
 }
 
-// DestroyListener removes listener for a key
+// DestroyKeyListener removes listener for a key
 func DestroyKeyListener(key int) {
 	if _, ok := listenerList[key]; ok {
 		listenerList[key].callback = func(event int) {}
@@ -40,5 +39,5 @@ func DestroyKeyListener(key int) {
 
 // GetKeyState will return the event state for a key
 func GetKeyState(key int) int {
-	return int(C.getKeyState(C.SDL_Keycode(key)))
+	return int(C.getKeyState(C.int(key)))
 }
