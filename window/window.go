@@ -10,6 +10,15 @@ import (
 
 /*
 #include <SDL2/SDL.h>
+
+void setGlContextAttributes() {
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+	#ifndef _GOSMF_OSX_
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	#endif
+}
 */
 import "C"
 
@@ -36,9 +45,7 @@ func New(width int, height int, fullscreen bool, name string) *Screen {
 	window := &Screen{}
 
 	C.SDL_Init(C.SDL_INIT_VIDEO)
-
-	C.SDL_GL_SetAttribute(C.SDL_GL_CONTEXT_PROFILE_MASK, C.SDL_GL_CONTEXT_PROFILE_CORE)
-	C.SDL_GL_SetAttribute(C.SDL_GL_CONTEXT_FLAGS, C.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
+	C.setGlContextAttributes()
 
 	C.SDL_GL_SetAttribute(C.SDL_GL_DOUBLEBUFFER, 1)
 
