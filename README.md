@@ -11,6 +11,6 @@ The window package requires SDL2 Development libraries/framework to be installed
 
 ### Windows only
 
-MinGW: Make sure you have the bin folder set in your PATH. Ensure you can run gcc and that the SDL2 include folder and libraries are in the Mingw include and lib folders. The arch will for mingw and sdl2 must match up in order to compile properly.
+MinGW: Make sure you have the bin folder set in your PATH. Ensure you can run gcc and that the SDL2 include folder and libraries are in the Mingw include and lib folders. The arch for mingw and sdl2 must match up in order to compile properly.
 
 After successful compiling, you will need to have the SDL2.dll in the same folder as the .exe
