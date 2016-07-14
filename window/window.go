@@ -41,7 +41,7 @@ type Screen struct {
 }
 
 // New returns a newly created Screen
-func New(width int, height int, fullscreen bool, name string) *Screen {
+func New(width int, height int, fullscreen bool, FSAA int, name string) *Screen {
 	window := &Screen{}
 
 	C.SDL_Init(C.SDL_INIT_VIDEO)
@@ -52,13 +52,15 @@ func New(width int, height int, fullscreen bool, name string) *Screen {
 	// Force hardware accel
 	C.SDL_GL_SetAttribute(C.SDL_GL_ACCELERATED_VISUAL, 1)
 
-	// FSAA (Fullscreen antialiasing)
-	C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLEBUFFERS, 1)
-	C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLESAMPLES, 8) //0, 2, 4
+	if FSAA > 0 {
+		// FSAA (Fullscreen antialiasing)
+		C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLEBUFFERS, 1)
+		C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLESAMPLES, C.int(FSAA)) // 2, 4, 8
+	}
 
-	flags := C.SDL_WINDOW_OPENGL
+	flags := C.SDL_WINDOW_OPENGL | C.SDL_RENDERER_ACCELERATED
 	if fullscreen {
-		flags = C.SDL_WINDOW_OPENGL | C.SDL_WINDOW_FULLSCREEN | C.SDL_RENDERER_ACCELERATED
+		flags = flags | C.SDL_WINDOW_FULLSCREEN
 	}
 
 	C.SDL_CreateWindowAndRenderer(C.int(width), C.int(height), C.Uint32(flags), &window.sdlWindow, &window.renderer)

@@ -16,7 +16,7 @@ import (
 
 func main() {
 
-	screen := window.New(800, 600, false, "gosmf example")
+	screen := window.New(800, 600, false, 0, "gosmf example")
 	defer screen.Destroy()
 	defer window.Cleanup()
 
