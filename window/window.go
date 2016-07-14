@@ -100,8 +100,8 @@ func (window *Screen) IsActive() bool {
 // Update will draw the new frame, run the event queue and check if the window
 // is still active. It will return the window active state.
 func (window *Screen) Update() bool {
-	window.blitScreen()
 	window.runEventQueue()
+	window.blitScreen()
 	return window.IsActive()
 }
 

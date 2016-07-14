@@ -31,8 +31,8 @@ func main() {
 	image, _ := sprite.New("box.png", 16, 16)
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
-	fpsDisplay := ttf.NewBillboard("fps: ",
-		500, 250, 1, 32, 300, color.RGBA{255, 255, 255, 255})
+	fpsDisplay := ttf.NewBillboard("fps ",
+		150, 50, 1, 6, 300, color.RGBA{255, 50, 50, 255})
 
 	window.AddKeyListener(window.KeyEscape, func(event int) {
 		if event == window.KeyStatePressed {
@@ -47,12 +47,13 @@ func main() {
 			verticalSync = !verticalSync
 		}
 	})
+	cam := camera.GetActiveCamera()
 
 	for screen.Update() {
 		updateCamera()
 		image.Draw(0, 0, 0, 20)
-		fpsDisplay.SetText(fmt.Sprintf("fps: %d", getCurrentFps()))
-		fpsDisplay.Draw(0, 300, 0)
+		fpsDisplay.SetText(fmt.Sprintf("fps %d", getCurrentFps()))
+		fpsDisplay.Draw((cam.Position[0]+cam.Bounds[0])-float32(fpsDisplay.Width), cam.Position[1], 0)
 	}
 }
 

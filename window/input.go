@@ -21,8 +21,8 @@ type listener struct {
 }
 
 // AddKeyListener creates a new key listener, only the last listener for a button will be honored
-//	input.AddListener(input.KeyEscape, func(event int) {
-//		if event == input.Release {
+//	input.AddKeyListener(input.KeyEscape, func(event int) {
+//		if event == input.KeyStateReleased {
 //			fmt.Println("Escape button released!")
 //		}
 //	})

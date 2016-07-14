@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 
+	"golang.org/x/image/math/fixed"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
@@ -39,7 +41,7 @@ func New(file string) (*Font, error) {
 	return fontList[file], nil
 }
 
-func (font *Font) createTexture(text string, width int, height int, size float64, dpi float64, rgba color.Color) uint32 {
+func (font *Font) createTexture(text string, width int, height int, size float64, dpi float64, rgba color.Color) (uint32, int, int) {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
 
@@ -68,7 +70,7 @@ func (font *Font) createTexture(text string, width int, height int, size float64
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, tex)
 
-	context.DrawString(text, freetype.Pt(0, height/2))
+	pixelBounds, _ := context.DrawString(text, freetype.Pt(0, height/2))
 	gl.TexImage2D(
 		gl.TEXTURE_2D,
 		0,
@@ -80,10 +82,10 @@ func (font *Font) createTexture(text string, width int, height int, size float64
 		gl.UNSIGNED_BYTE,
 		gl.Ptr(img.Pix))
 
-	return tex
+	return tex, int26_6Ceiling(pixelBounds.X + 0x3f), int26_6Ceiling(pixelBounds.Y + 0x3f)
 }
 
-func (font *Font) updateTexture(texture uint32, text string, width int, height int, size float64, dpi float64, rgba color.Color) {
+func (font *Font) updateTexture(texture uint32, text string, width int, height int, size float64, dpi float64, rgba color.Color) (int, int) {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
 
@@ -101,7 +103,7 @@ func (font *Font) updateTexture(texture uint32, text string, width int, height i
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
 
-	context.DrawString(text, freetype.Pt(0, height/2))
+	pixelBounds, _ := context.DrawString(text, freetype.Pt(0, height/2))
 	gl.TexSubImage2D(
 		gl.TEXTURE_2D,
 		0,
@@ -112,4 +114,10 @@ func (font *Font) updateTexture(texture uint32, text string, width int, height i
 		gl.RGBA,
 		gl.UNSIGNED_BYTE,
 		gl.Ptr(img.Pix))
+
+	return int26_6Ceiling(pixelBounds.X + 0x3f), int26_6Ceiling(pixelBounds.Y + 0x3f)
+}
+
+func int26_6Ceiling(x fixed.Int26_6) int {
+	return int((x + 0x3f) >> 6)
 }

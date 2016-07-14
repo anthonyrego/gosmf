@@ -10,12 +10,12 @@ import (
 
 // Billboard is an object for font rendering
 type Billboard struct {
+	Width     int
+	Height    int
 	image     uint32
 	vao       uint32
 	font      *Font
 	text      string
-	width     int
-	height    int
 	rgba      color.Color
 	size      float64
 	dpi       float64
@@ -24,22 +24,22 @@ type Billboard struct {
 }
 
 // NewBillboard creates a 2D billboard for rendering
-func (font *Font) NewBillboard(text string, width int, height int, scale int, size float64, dpi float64, color color.Color) *Billboard {
+func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, scale int, size float64, dpi float64, color color.Color) *Billboard {
 	b := &Billboard{}
 
-	b.texWidth = width * scale
-	b.texHeight = height * scale
+	b.texWidth = maxWidth * scale
+	b.texHeight = maxHeight * scale
 
-	image := font.createTexture(text, b.texWidth, b.texHeight, size, dpi, color)
+	image, renderedWidth, renderedHeight := font.createTexture(text, b.texWidth, b.texHeight, size, dpi, color)
 
-	b.width = width
-	b.height = height
 	b.size = size
 	b.dpi = dpi
 	b.text = text
 	b.font = font
 	b.rgba = color
 
+	b.Width = renderedWidth
+	b.Height = renderedHeight
 	var vao uint32
 
 	gl.GenVertexArrays(1, &vao)
@@ -49,8 +49,8 @@ func (font *Font) NewBillboard(text string, width int, height int, scale int, si
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 
-	w := float32(width)
-	h := float32(height)
+	w := float32(maxWidth)
+	h := float32(maxHeight)
 
 	billboardVertices := []float32{
 		w, h, 0.0, 1.0, 1.0,
@@ -98,7 +98,7 @@ func (billboard *Billboard) Draw(x float32, y float32, z float32) {
 // SetText updates the billboard text
 func (billboard *Billboard) SetText(text string) {
 	if billboard.font != nil && text != billboard.text {
-		billboard.font.updateTexture(
+		renderedWidth, renderedHeight := billboard.font.updateTexture(
 			billboard.image,
 			text,
 			billboard.texWidth,
@@ -107,6 +107,8 @@ func (billboard *Billboard) SetText(text string) {
 			billboard.dpi,
 			billboard.rgba)
 		billboard.text = text
+		billboard.Width = renderedWidth
+		billboard.Height = renderedHeight
 	}
 }
 

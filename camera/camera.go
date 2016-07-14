@@ -22,6 +22,7 @@ func GetActiveCamera() *Camera {
 // Camera type for camera making
 type Camera struct {
 	Position   mgl32.Vec3
+	Bounds     mgl32.Vec3
 	Focus      mgl32.Vec3
 	Up         mgl32.Vec3
 	projection mgl32.Mat4
@@ -51,18 +52,21 @@ func (cam *Camera) SetActive() {
 // SetOrtho will set the camera to an orthogonal projection
 func (cam *Camera) SetOrtho(w int, h int, zDepth int) {
 	cam.zDepth = float32(zDepth)
+	cam.Bounds = mgl32.Vec3{float32(w), float32(h), float32(zDepth)}
 	cam.projection = mgl32.Ortho(0, float32(w), float32(h), 0, -1, cam.zDepth)
 	cam.update()
 }
 
 // SetPerspective set a perspective projection
 func (cam *Camera) SetPerspective(angle float32, w int, h int, zDepth int) {
+	cam.Bounds = mgl32.Vec3{float32(w), float32(h), float32(zDepth)}
 	cam.projection = mgl32.Perspective(mgl32.DegToRad(angle), float32(w)/float32(h), 0.1, 10.0)
 	cam.update()
 }
 
 // SetPosition2D will adjust the camera for ortho viewing to specified location
 func (cam *Camera) SetPosition2D(x float32, y float32) {
+	cam.Position = mgl32.Vec3{x, y, cam.zDepth}
 	cam.loc = mgl32.LookAtV(mgl32.Vec3{x, y, cam.zDepth}, mgl32.Vec3{x, y, 0}, mgl32.Vec3{0, 1, 0})
 	cam.update()
 }
