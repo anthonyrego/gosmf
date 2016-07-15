@@ -46,17 +46,15 @@ func (font *Font) createTexture(text string, width int, height int, size float64
 	context.SetFont(font.ttf)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
-
 	r, g, b, _ := rgba.RGBA()
 	draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{uint8(r), uint8(g), uint8(b), 0}), image.ZP, draw.Src)
 
 	context.SetDst(img)
 	context.SetClip(img.Bounds())
-
 	context.SetSrc(image.NewUniform(rgba))
-
 	context.SetFontSize(size)
 	context.SetDPI(dpi)
+	pixelBounds, _ := context.DrawString(text, freetype.Pt(0, height/2))
 
 	var tex uint32
 	gl.GenTextures(1, &tex)
@@ -70,7 +68,6 @@ func (font *Font) createTexture(text string, width int, height int, size float64
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, tex)
 
-	pixelBounds, _ := context.DrawString(text, freetype.Pt(0, height/2))
 	gl.TexImage2D(
 		gl.TEXTURE_2D,
 		0,
@@ -96,14 +93,13 @@ func (font *Font) updateTexture(texture uint32, text string, width int, height i
 	context.SetDst(img)
 	context.SetClip(img.Bounds())
 	context.SetSrc(image.NewUniform(rgba))
-
 	context.SetFontSize(size)
 	context.SetDPI(dpi)
+	pixelBounds, _ := context.DrawString(text, freetype.Pt(0, height/2))
 
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
 
-	pixelBounds, _ := context.DrawString(text, freetype.Pt(0, height/2))
 	gl.TexSubImage2D(
 		gl.TEXTURE_2D,
 		0,

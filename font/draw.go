@@ -24,11 +24,11 @@ type Billboard struct {
 }
 
 // NewBillboard creates a 2D billboard for rendering
-func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, scale int, size float64, dpi float64, color color.Color) *Billboard {
+func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, size float64, dpi float64, color color.Color) *Billboard {
 	b := &Billboard{}
 
-	b.texWidth = maxWidth * scale
-	b.texHeight = maxHeight * scale
+	b.texWidth = maxWidth
+	b.texHeight = maxHeight
 
 	image, renderedWidth, renderedHeight := font.createTexture(text, b.texWidth, b.texHeight, size, dpi, color)
 

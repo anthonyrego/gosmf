@@ -3,8 +3,12 @@ package main
 import (
 	"fmt"
 	"image/color"
-	_ "image/png"
+	_ "image/jpeg"
+	"io"
+	"log"
 	"math"
+	"net/http"
+	"os"
 
 	"github.com/anthonyrego/gosmf/audio"
 	"github.com/anthonyrego/gosmf/camera"
@@ -28,11 +32,21 @@ func main() {
 	updateCamera := initCamera(screen)
 	getCurrentFps := initFpsCounter(screen)
 
-	image, _ := sprite.New("box.png", 16, 16)
+	// If image does not exist, download a random one
+	if _, err := os.Stat("img.jpg"); os.IsNotExist(err) {
+		downloadFile("https://placeimg.com/256/256/any", "img.jpg")
+	}
+	// If font does not exist, download roboto
+	if _, err := os.Stat("Roboto-Regular.ttf"); os.IsNotExist(err) {
+		downloadFile("https://raw.githubusercontent.com/google/roboto/master/hinted/Roboto-Regular.ttf",
+			"Roboto-Regular.ttf")
+	}
+
+	image, _ := sprite.New("img.jpg", 256, 256)
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
 	fpsDisplay := ttf.NewBillboard("fps ",
-		150, 50, 1, 6, 300, color.RGBA{255, 50, 50, 255})
+		150, 50, 6, 300, color.RGBA{255, 50, 50, 255})
 
 	window.AddKeyListener(window.KeyEscape, func(event int) {
 		if event == window.KeyStatePressed {
@@ -51,7 +65,7 @@ func main() {
 
 	for screen.Update() {
 		updateCamera()
-		image.Draw(0, 0, 0, 20)
+		image.Draw(0, 0, 0, 1)
 		fpsDisplay.SetText(fmt.Sprintf("fps %d", getCurrentFps()))
 		fpsDisplay.Draw((cam.Position[0]+cam.Bounds[0])-float32(fpsDisplay.Width), cam.Position[1], 0)
 	}
@@ -104,4 +118,15 @@ func initCamera(screen *window.Screen) func() {
 		}
 		cam1.SetPosition2D(float32(camx), float32(camy))
 	}
+}
+
+func downloadFile(url string, filename string) {
+	response, _ := http.Get(url)
+	defer response.Body.Close()
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	io.Copy(file, response.Body)
+	file.Close()
 }
