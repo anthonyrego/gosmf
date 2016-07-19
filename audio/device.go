@@ -12,22 +12,22 @@ ALCcontext *context;
 ALCdevice *device;
 
 void openAudioDevice() {
-  const ALCchar *default_device;
+	const ALCchar *default_device;
 
-  default_device = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
-  if ((device = alcOpenDevice(default_device)) == NULL)
-  {
-    fprintf(stderr, "failed to open sound device\n");
-    return;
-  }
-  context = alcCreateContext(device, NULL);
+	default_device = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+	if ((device = alcOpenDevice(default_device)) == NULL)
+	{
+		fprintf(stderr, "failed to open sound device\n");
+		return;
+	}
+	context = alcCreateContext(device, NULL);
 
-  alcMakeContextCurrent(context);
+	alcMakeContextCurrent(context);
 
-  alcProcessContext(context);
+	alcProcessContext(context);
 
 	if (alcGetError(device) == ALC_NO_ERROR) {
-  	fprintf(stdout, "Opened sound device: %s\n", default_device);
+		fprintf(stdout, "Opened sound device: %s\n", default_device);
 	}else {
 		fprintf(stderr, "Failed to open audio device\n");
 	}
@@ -35,9 +35,9 @@ void openAudioDevice() {
 
 void closeAudioDevice()
 {
-  alcMakeContextCurrent(NULL);
-  alcDestroyContext(context);
-  alcCloseDevice(device);
+	alcMakeContextCurrent(NULL);
+	alcDestroyContext(context);
+	alcCloseDevice(device);
 }
 */
 import "C"
