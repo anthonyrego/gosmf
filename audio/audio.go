@@ -8,14 +8,6 @@ package audio
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 
-
-ALuint genBuffer() {
-  ALuint sound;
-
-  alGenBuffers(1, &sound);
-  return sound;
-}
-
 */
 import "C"
 import "unsafe"
@@ -36,15 +28,15 @@ type Sound struct {
 	buffer    C.ALuint
 }
 
-func (w *Sound) attachSoundData() {
-	w.buffer = C.genBuffer()
-	C.alBufferData(w.buffer, C.AL_FORMAT_STEREO16, unsafe.Pointer(&w.data[0]), C.ALsizei(w.size), C.ALsizei(w.frequency))
+func (s *Sound) attachSoundData() {
+	C.alGenBuffers(1, &s.buffer)
+	C.alBufferData(s.buffer, C.AL_FORMAT_STEREO16, unsafe.Pointer(&s.data[0]), C.ALsizei(s.size), C.ALsizei(s.frequency))
 }
 
-func (w *Sound) Play() {
+func (s *Sound) Play() {
 	var source C.ALuint
 	C.alGenSources(1, &source)
 
-	C.alSourcei(source, C.AL_BUFFER, C.ALint(w.buffer))
+	C.alSourcei(source, C.AL_BUFFER, C.ALint(s.buffer))
 	C.alSourcePlay(source)
 }
