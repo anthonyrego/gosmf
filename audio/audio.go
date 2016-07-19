@@ -35,10 +35,10 @@ type Sound struct {
 //
 //	s := NewSound("example.mp3")
 //
-//  /* Code that gets the Data, BufferSize, Frequency and Channels of mp3s */
+//	/* Code that gets the Data, BufferSize, Frequency and Channels of mp3s */
 //
-//  //The we load that data in manually with:
-//  s.LoadPCMData()
+//	//The we load that data in manually with:
+//	s.LoadPCMData()
 //
 func NewSound(file string) *Sound {
 
