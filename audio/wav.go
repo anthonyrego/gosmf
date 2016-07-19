@@ -12,7 +12,10 @@ func LoadWav(file string) *Sound {
 	var thirtytwo uint32
 	var sixteen uint16
 
-	w := &Sound{}
+	w := NewSound(file)
+	if w.buffer != 0 {
+		return w
+	}
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		fmt.Println(err)
@@ -29,11 +32,11 @@ func LoadWav(file string) *Sound {
 	binary.Read(r, binary.LittleEndian, &thirtytwo)
 	binary.Read(r, binary.LittleEndian, &sixteen)
 
-	if err := binary.Read(r, binary.LittleEndian, &w.channels); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.Channels); err != nil {
 		return w
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &w.frequency); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.Frequency); err != nil {
 		return w
 	}
 
@@ -43,18 +46,18 @@ func LoadWav(file string) *Sound {
 	binary.Read(r, binary.LittleEndian, &sixteen)
 	binary.Read(r, binary.BigEndian, &thirtytwo)
 
-	if err := binary.Read(r, binary.LittleEndian, &w.size); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.Size); err != nil {
 		return w
 	}
 
-	w.data = make([]byte, w.size)
+	w.Data = make([]byte, w.Size)
 
-	_, err = io.ReadFull(r, w.data)
+	_, err = io.ReadFull(r, w.Data)
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	w.attachSoundData()
+	w.LoadPCMData()
 
 	return w
 }
