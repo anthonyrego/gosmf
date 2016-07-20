@@ -36,6 +36,7 @@ func StopPlayback(requestId int64) {
 			C.alSourceStop(sourceList[i].id)
 			sourceList[i].occupied = false
 			sourceList[i].isPlaying = false
+			return
 		}
 	}
 }
