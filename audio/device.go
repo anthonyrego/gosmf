@@ -26,9 +26,7 @@ void openAudioDevice() {
 
 	alcProcessContext(context);
 
-	if (alcGetError(device) == ALC_NO_ERROR) {
-		fprintf(stdout, "Opened sound device: %s\n", default_device);
-	}else {
+	if (alcGetError(device) != ALC_NO_ERROR) {
 		fprintf(stderr, "Failed to open audio device\n");
 	}
 }

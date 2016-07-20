@@ -14,9 +14,11 @@ import "unsafe"
 
 func Init() {
 	initDevice()
+	initSourceList()
 }
 
 func Cleanup() {
+	destroySourceList()
 	destroyDevice()
 }
 
@@ -53,20 +55,47 @@ func NewSound(file string) *Sound {
 }
 
 func (s *Sound) LoadPCMData() {
+	format := 0
+	switch s.Channels {
+	default:
+		return
+	case 1:
+		format = C.AL_FORMAT_MONO16
+	case 2:
+		format = C.AL_FORMAT_STEREO16
+	}
 	C.alGenBuffers(1, &s.buffer)
-	C.alBufferData(s.buffer, C.AL_FORMAT_MONO16, unsafe.Pointer(&s.Data[0]), C.ALsizei(s.Size), C.ALsizei(s.Frequency))
+	C.alBufferData(s.buffer, C.ALenum(format), unsafe.Pointer(&s.Data[0]), C.ALsizei(s.Size), C.ALsizei(s.Frequency))
 }
 
-func (s *Sound) Play(x, y, z float32) {
-	var source C.ALuint
-	C.alGenSources(1, &source)
-	C.alSourcef(source, C.AL_REFERENCE_DISTANCE, 100)
-	C.alSource3f(source, C.AL_POSITION, C.ALfloat(x), C.ALfloat(y), C.ALfloat(z))
-	C.alSourcei(source, C.AL_BUFFER, C.ALint(s.buffer))
-	C.alSourcePlay(source)
+// Play will play the sound
+func (s *Sound) Play() {
+	source, err := requestSource()
+	if err != nil {
+		return
+	}
+	C.alSourcei(source.id, C.AL_SOURCE_RELATIVE, C.AL_TRUE)
+	C.alSource3f(source.id, C.AL_POSITION, 0, 0, 0)
+	C.alSourcei(source.id, C.AL_BUFFER, C.ALint(s.buffer))
+
+	source.setToPlay()
+}
+
+// Play will play the sound at a given position and the falloff distance in which the sound's volume is cut in half.
+// Remember that in order for the 3D audio to work properly that the audio needs to be all in one channel, not stereo!
+func (s *Sound) Play3D(x, y, z, falloff float32) {
+	source, err := requestSource()
+	if err != nil {
+		return
+	}
+	C.alSourcei(source.id, C.AL_SOURCE_RELATIVE, C.AL_FALSE)
+	C.alSourcef(source.id, C.AL_REFERENCE_DISTANCE, C.ALfloat(falloff))
+	C.alSource3f(source.id, C.AL_POSITION, C.ALfloat(x), C.ALfloat(y), C.ALfloat(z))
+	C.alSourcei(source.id, C.AL_BUFFER, C.ALint(s.buffer))
+
+	source.setToPlay()
 }
 
 func SetListenPosition(x, y, z float32) {
-	C.alListenerf(C.AL_GAIN, 1)
 	C.alListener3f(C.AL_POSITION, C.ALfloat(x), C.ALfloat(y), C.ALfloat(z))
 }
