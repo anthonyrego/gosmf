@@ -10,7 +10,10 @@ package audio
 
 */
 import "C"
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 var sourceList [255]source
 var sourceChannel chan int
@@ -18,12 +21,23 @@ var sourceChannel chan int
 type source struct {
 	occupied  bool
 	isPlaying bool
+	requestId int64
 	id        C.ALuint
 }
 
 func (s *source) setToPlay() {
 	C.alSourcePlay(s.id)
 	s.isPlaying = true
+}
+
+func StopPlayback(requestId int64) {
+	for i, src := range sourceList {
+		if src.requestId == requestId && src.isPlaying {
+			C.alSourceStop(sourceList[i].id)
+			sourceList[i].occupied = false
+			sourceList[i].isPlaying = false
+		}
+	}
 }
 
 func initSourceList() {
@@ -68,6 +82,7 @@ func requestSource() (*source, error) {
 	for i, _ := range sourceList {
 		if !sourceList[i].occupied {
 			sourceList[i].occupied = true
+			sourceList[i].requestId = time.Now().UnixNano()
 			return &sourceList[i], nil
 		}
 	}
