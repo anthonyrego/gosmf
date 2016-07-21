@@ -43,7 +43,9 @@ func LoadWav(file string) *Sound {
 	// Ignore some more data that we do not need
 	binary.Read(r, binary.LittleEndian, &thirtytwo)
 	binary.Read(r, binary.LittleEndian, &sixteen)
-	binary.Read(r, binary.LittleEndian, &sixteen)
+	if err := binary.Read(r, binary.LittleEndian, &w.BitsPerSample); err != nil {
+		return w
+	}
 	binary.Read(r, binary.BigEndian, &thirtytwo)
 
 	if err := binary.Read(r, binary.LittleEndian, &w.Size); err != nil {

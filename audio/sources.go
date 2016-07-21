@@ -41,6 +41,26 @@ func StopPlayback(requestId int64) {
 	}
 }
 
+func IsPlaying(requestId int64) bool {
+	for _, src := range sourceList {
+		if src.requestId == requestId && src.isPlaying {
+			return true
+		}
+	}
+	return false
+}
+
+func requestSource() (*source, error) {
+	for i, _ := range sourceList {
+		if !sourceList[i].occupied {
+			sourceList[i].occupied = true
+			sourceList[i].requestId = time.Now().UnixNano()
+			return &sourceList[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no available sources")
+}
+
 func initSourceList() {
 	for i, _ := range sourceList {
 		C.alGenSources(1, &sourceList[i].id)
@@ -77,15 +97,4 @@ func destroySourceList() {
 	for i, _ := range sourceList {
 		C.alDeleteSources(1, &sourceList[i].id)
 	}
-}
-
-func requestSource() (*source, error) {
-	for i, _ := range sourceList {
-		if !sourceList[i].occupied {
-			sourceList[i].occupied = true
-			sourceList[i].requestId = time.Now().UnixNano()
-			return &sourceList[i], nil
-		}
-	}
-	return nil, fmt.Errorf("no available sources")
 }

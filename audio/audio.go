@@ -25,11 +25,12 @@ func Cleanup() {
 var soundList = map[string]*Sound{}
 
 type Sound struct {
-	Channels  uint16
-	Frequency uint32
-	Size      uint32
-	Data      []byte
-	buffer    C.ALuint
+	Channels      uint16
+	Frequency     uint32
+	BitsPerSample uint16
+	Size          uint32
+	Data          []byte
+	buffer        C.ALuint
 }
 
 // NewSound returns a newly created Sound object.
@@ -56,14 +57,23 @@ func NewSound(file string) *Sound {
 
 func (s *Sound) LoadPCMData() {
 	format := 0
-	switch s.Channels {
-	default:
-		return
-	case 1:
-		format = C.AL_FORMAT_MONO16
-	case 2:
-		format = C.AL_FORMAT_STEREO16
+
+	if s.Channels > 1 {
+		switch s.BitsPerSample {
+		case 8:
+			format = C.AL_FORMAT_STEREO8
+		case 16:
+			format = C.AL_FORMAT_STEREO16
+		}
+	} else {
+		switch s.BitsPerSample {
+		case 8:
+			format = C.AL_FORMAT_MONO8
+		case 16:
+			format = C.AL_FORMAT_MONO16
+		}
 	}
+
 	C.alGenBuffers(1, &s.buffer)
 	C.alBufferData(s.buffer, C.ALenum(format), unsafe.Pointer(&s.Data[0]), C.ALsizei(s.Size), C.ALsizei(s.Frequency))
 }
