@@ -16,7 +16,7 @@ func main() {
 	defer audio.Cleanup()
 
 	// If sound does not exist, download one
-	if _, err := os.Stat("img.jpg"); os.IsNotExist(err) {
+	if _, err := os.Stat("door.wav"); os.IsNotExist(err) {
 		downloadFile("https://archive.org/download/Sound_Effects_3/DOORBELL.WAV", "door.wav")
 	}
 	sound := audio.LoadWav("door.wav")
