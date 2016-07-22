@@ -22,7 +22,7 @@ func main() {
 	sound := audio.LoadWav("door.wav")
 	playRequest := sound.Play3D(0, 0, 0, 100)
 
-	for audio.IsPlaying(playRequest) {
+	for playRequest.IsPlaying() {
 		fmt.Print("\rPlaying...")
 	}
 	fmt.Println("done")

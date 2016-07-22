@@ -78,27 +78,29 @@ func (s *Sound) LoadPCMData() {
 	C.alBufferData(s.buffer, C.ALenum(format), unsafe.Pointer(&s.Data[0]), C.ALsizei(s.Size), C.ALsizei(s.Frequency))
 }
 
-// Play will play the sound. Returns the play request id that can be used to stop the source while playing
-func (s *Sound) Play() int64 {
+// Play will play the sound. Returns the PlayInstance that can be used to stop the source while playing
+func (s *Sound) Play() (request PlayInstance) {
 	source, err := requestSource()
 	if err != nil {
-		return -1
+		return request
 	}
 	C.alSourcei(source.id, C.AL_SOURCE_RELATIVE, C.AL_TRUE)
 	C.alSource3f(source.id, C.AL_POSITION, 0, 0, 0)
 	C.alSourcei(source.id, C.AL_BUFFER, C.ALint(s.buffer))
 
 	source.setToPlay()
-	return source.requestId
+	request.id = source.requestId
+	request.src = source
+	return request
 }
 
 // Play will play the sound at a given position and the falloff distance in which the sound's volume is cut in half.
-// It will return the play request id that can be used to stop the source while playing
+// It will return the PlayInstance that can be used to stop the source while playing
 // Remember that in order for the 3D audio to work properly that the audio needs to be all in one channel, not stereo!
-func (s *Sound) Play3D(x, y, z, falloff float32) int64 {
+func (s *Sound) Play3D(x, y, z, falloff float32) (request PlayInstance) {
 	source, err := requestSource()
 	if err != nil {
-		return -1
+		return request
 	}
 	C.alSourcei(source.id, C.AL_SOURCE_RELATIVE, C.AL_FALSE)
 	C.alSourcef(source.id, C.AL_REFERENCE_DISTANCE, C.ALfloat(falloff))
@@ -106,7 +108,35 @@ func (s *Sound) Play3D(x, y, z, falloff float32) int64 {
 	C.alSourcei(source.id, C.AL_BUFFER, C.ALint(s.buffer))
 
 	source.setToPlay()
-	return source.requestId
+	request.id = source.requestId
+	request.src = source
+	return request
+}
+
+// PlayInstance is returned when you make a call to play a sound so you can stop playback or determine if the sound is still playing
+type PlayInstance struct {
+	src *source
+	id  int64
+}
+
+func (playback *PlayInstance) StopPlayback() {
+	if playback.src != nil &&
+		playback.id == playback.src.requestId &&
+		playback.src.isPlaying {
+
+		C.alSourceStop(playback.src.id)
+		playback.src.occupied = false
+		playback.src.isPlaying = false
+	}
+}
+
+func (playback *PlayInstance) IsPlaying() bool {
+	if playback.src != nil &&
+		playback.id == playback.src.requestId &&
+		playback.src.isPlaying {
+		return true
+	}
+	return false
 }
 
 func SetListenPosition(x, y, z float32) {

@@ -30,26 +30,6 @@ func (s *source) setToPlay() {
 	s.isPlaying = true
 }
 
-func StopPlayback(requestId int64) {
-	for i, src := range sourceList {
-		if src.requestId == requestId && src.isPlaying {
-			C.alSourceStop(sourceList[i].id)
-			sourceList[i].occupied = false
-			sourceList[i].isPlaying = false
-			return
-		}
-	}
-}
-
-func IsPlaying(requestId int64) bool {
-	for _, src := range sourceList {
-		if src.requestId == requestId && src.isPlaying {
-			return true
-		}
-	}
-	return false
-}
-
 func requestSource() (*source, error) {
 	for i, _ := range sourceList {
 		if !sourceList[i].occupied {
