@@ -20,9 +20,9 @@ func main() {
 		downloadFile("https://archive.org/download/Sound_Effects_3/DOORBELL.WAV", "door.wav")
 	}
 	sound := audio.LoadWav("door.wav")
-	playRequest := sound.Play3D(0, 0, 0, 100)
+	playInstance := sound.Play()
 
-	for playRequest.IsPlaying() {
+	for playInstance.IsPlaying() {
 		fmt.Print("\rPlaying...")
 	}
 	fmt.Println("done")
