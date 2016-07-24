@@ -78,6 +78,10 @@ func (s *Sound) LoadPCMData() {
 	C.alBufferData(s.buffer, C.ALenum(format), unsafe.Pointer(&s.Data[0]), C.ALsizei(s.Size), C.ALsizei(s.Frequency))
 }
 
+func (s *Sound) Destroy() {
+	C.alDeleteBuffers(1, &s.buffer)
+}
+
 // Play will play the sound. Volume ( 1.0 is normal volume, 0 is silence )
 // Returns the PlayInstance that can be used to stop the source while playing
 func (s *Sound) Play(volume float32) (request PlayInstance) {
