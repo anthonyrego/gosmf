@@ -78,12 +78,14 @@ func (s *Sound) LoadPCMData() {
 	C.alBufferData(s.buffer, C.ALenum(format), unsafe.Pointer(&s.Data[0]), C.ALsizei(s.Size), C.ALsizei(s.Frequency))
 }
 
-// Play will play the sound. Returns the PlayInstance that can be used to stop the source while playing
-func (s *Sound) Play() (request PlayInstance) {
+// Play will play the sound. Volume ( 1.0 is normal volume, 0 is silence )
+// Returns the PlayInstance that can be used to stop the source while playing
+func (s *Sound) Play(volume float32) (request PlayInstance) {
 	source, err := requestSource()
 	if err != nil {
 		return request
 	}
+	C.alSourcef(source.id, C.AL_GAIN, C.ALfloat(volume))
 	C.alSourcei(source.id, C.AL_SOURCE_RELATIVE, C.AL_TRUE)
 	C.alSource3f(source.id, C.AL_POSITION, 0, 0, 0)
 	C.alSourcei(source.id, C.AL_BUFFER, C.ALint(s.buffer))
@@ -94,14 +96,16 @@ func (s *Sound) Play() (request PlayInstance) {
 	return request
 }
 
-// Play will play the sound at a given position and the falloff distance in which the sound's volume is cut in half.
+// Play will play the sound at a given position, the falloff distance in which the sound's volume is cut in half,
+// and the volume ( 1.0 is normal volume, 0 is silence )
 // It will return the PlayInstance that can be used to stop the source while playing
 // Remember that in order for the 3D audio to work properly that the audio needs to be all in one channel, not stereo!
-func (s *Sound) Play3D(x, y, z, falloff float32) (request PlayInstance) {
+func (s *Sound) Play3D(x, y, z, falloff, volume float32) (request PlayInstance) {
 	source, err := requestSource()
 	if err != nil {
 		return request
 	}
+	C.alSourcef(source.id, C.AL_GAIN, C.ALfloat(volume))
 	C.alSourcei(source.id, C.AL_SOURCE_RELATIVE, C.AL_FALSE)
 	C.alSourcef(source.id, C.AL_REFERENCE_DISTANCE, C.ALfloat(falloff))
 	C.alSource3f(source.id, C.AL_POSITION, C.ALfloat(x), C.ALfloat(y), C.ALfloat(z))

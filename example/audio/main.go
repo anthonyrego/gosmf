@@ -20,7 +20,7 @@ func main() {
 		downloadFile("https://archive.org/download/Sound_Effects_3/DOORBELL.WAV", "door.wav")
 	}
 	sound := audio.LoadWav("door.wav")
-	playInstance := sound.Play()
+	playInstance := sound.Play(1)
 
 	for playInstance.IsPlaying() {
 		fmt.Print("\rPlaying...")

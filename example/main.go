@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/anthonyrego/gosmf/audio"
 	"github.com/anthonyrego/gosmf/camera"
 	"github.com/anthonyrego/gosmf/font"
 	"github.com/anthonyrego/gosmf/shader"
@@ -23,9 +22,6 @@ func main() {
 	screen := window.New(800, 600, false, 0, "gosmf example")
 	defer screen.Destroy()
 	defer window.Cleanup()
-
-	audio.Init()
-	defer audio.Cleanup()
 
 	shader.Use("default")
 
