@@ -1,7 +1,7 @@
 package shader
 
 var shaderList = map[string]Shader{
-	"default": Shader{
+	"texture": Shader{
 		vert: `
   	#version 330
 
