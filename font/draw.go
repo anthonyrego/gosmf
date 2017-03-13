@@ -1,8 +1,6 @@
 package font
 
 import (
-	"image/color"
-
 	"github.com/anthonyrego/gosmf/shader"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -16,7 +14,6 @@ type Billboard struct {
 	vao       uint32
 	font      *Font
 	text      string
-	rgba      color.Color
 	size      float64
 	dpi       float64
 	texWidth  int
@@ -24,19 +21,18 @@ type Billboard struct {
 }
 
 // NewBillboard creates a 2D billboard for rendering
-func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, size float64, dpi float64, color color.Color) *Billboard {
+func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, size float64, dpi float64) *Billboard {
 	b := &Billboard{}
 
 	b.texWidth = maxWidth
 	b.texHeight = maxHeight
 
-	image, renderedWidth, renderedHeight := font.createTexture(text, b.texWidth, b.texHeight, size, dpi, color)
+	image, renderedWidth, renderedHeight := font.createTexture(text, b.texWidth, b.texHeight, size, dpi)
 
 	b.size = size
 	b.dpi = dpi
 	b.text = text
 	b.font = font
-	b.rgba = color
 
 	b.Width = renderedWidth
 	b.Height = renderedHeight
@@ -79,12 +75,13 @@ func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, size fl
 }
 
 // Draw will draw the billvboard in the x,y and z
-func (billboard *Billboard) Draw(x float32, y float32, z float32) {
+func (billboard *Billboard) Draw(x, y, z, r, g, b, a float32) {
 
 	model := mgl32.Translate3D(x, y, z)
 
 	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.Uniforms["model"], 1, false, &model[0])
+		gl.Uniform4f(shader.Uniforms["color"], r, g, b, a)
 	}
 
 	gl.BindVertexArray(billboard.vao)
@@ -104,25 +101,9 @@ func (billboard *Billboard) SetText(text string) {
 			billboard.texWidth,
 			billboard.texHeight,
 			billboard.size,
-			billboard.dpi,
-			billboard.rgba)
+			billboard.dpi)
 		billboard.text = text
 		billboard.Width = renderedWidth
 		billboard.Height = renderedHeight
-	}
-}
-
-// SetColor updates the color of the text
-func (billboard *Billboard) SetColor(color color.Color) {
-	if billboard.font != nil && color != billboard.rgba {
-		billboard.font.updateTexture(
-			billboard.image,
-			billboard.text,
-			billboard.texWidth,
-			billboard.texHeight,
-			billboard.size,
-			billboard.dpi,
-			color)
-		billboard.rgba = color
 	}
 }

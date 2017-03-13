@@ -41,17 +41,16 @@ func New(file string) (*Font, error) {
 	return fontList[file], nil
 }
 
-func (font *Font) createTexture(text string, width int, height int, size float64, dpi float64, rgba color.Color) (uint32, int, int) {
+func (font *Font) createTexture(text string, width int, height int, size float64, dpi float64) (uint32, int, int) {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	r, g, b, _ := rgba.RGBA()
-	draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{uint8(r), uint8(g), uint8(b), 0}), image.ZP, draw.Src)
+	draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{255, 255, 255, 0}), image.ZP, draw.Src)
 
 	context.SetDst(img)
 	context.SetClip(img.Bounds())
-	context.SetSrc(image.NewUniform(rgba))
+	context.SetSrc(image.NewUniform(color.RGBA{255, 255, 255, 255}))
 	context.SetFontSize(size)
 	context.SetDPI(dpi)
 	pixelBounds, _ := context.DrawString(text, freetype.Pt(0, height/2))
@@ -82,17 +81,16 @@ func (font *Font) createTexture(text string, width int, height int, size float64
 	return tex, int26_6Ceiling(pixelBounds.X + 0x3f), int26_6Ceiling(pixelBounds.Y + 0x3f)
 }
 
-func (font *Font) updateTexture(texture uint32, text string, width int, height int, size float64, dpi float64, rgba color.Color) (int, int) {
+func (font *Font) updateTexture(texture uint32, text string, width int, height int, size float64, dpi float64) (int, int) {
 	context := freetype.NewContext()
 	context.SetFont(font.ttf)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	r, g, b, _ := rgba.RGBA()
-	draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{uint8(r), uint8(g), uint8(b), 0}), image.ZP, draw.Src)
+	draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{255, 255, 255, 0}), image.ZP, draw.Src)
 
 	context.SetDst(img)
 	context.SetClip(img.Bounds())
-	context.SetSrc(image.NewUniform(rgba))
+	context.SetSrc(image.NewUniform(color.RGBA{255, 255, 255, 255}))
 	context.SetFontSize(size)
 	context.SetDPI(dpi)
 	pixelBounds, _ := context.DrawString(text, freetype.Pt(0, height/2))
