@@ -23,8 +23,11 @@ func main() {
 	defer window.Cleanup()
 
 	shader.LoadBasicShaders()
-	shader.Use("texture")
-
+	texShader, err := shader.GetShaderByName("texture")
+	if err != nil {
+		return
+	}
+	texShader.Activate()
 	updateCamera := initCamera(screen)
 	getCurrentFps := initFpsCounter(screen)
 

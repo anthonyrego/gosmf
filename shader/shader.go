@@ -1,6 +1,7 @@
 package shader
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -55,13 +56,12 @@ func (shader *Shader) GetUniform(name string) int32 {
 	return 0
 }
 
-// Use will set active a shader by name from a map of preloaded plus user generated shaders
-func Use(shaderName string) (shader *Shader) {
-	if shader := shaderList[shaderName]; shader.vert != "" {
-		shader.Activate()
-		return &shader
+// GetShaderByName retrieves a loaded shader by its name
+func GetShaderByName(name string) (*Shader, error) {
+	if shader, ok := shaderList[name]; ok {
+		return &shader, nil
 	}
-	return nil
+	return nil, errors.New("shader: not found")
 }
 
 // New creates a new shader object. The shader can later be activated by the given name with the Use function
