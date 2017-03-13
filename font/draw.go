@@ -80,8 +80,8 @@ func (billboard *Billboard) Draw(x, y, z, r, g, b, a float32) {
 	model := mgl32.Translate3D(x, y, z)
 
 	if shader := shader.GetActive(); shader != nil {
-		gl.UniformMatrix4fv(shader.Uniforms["model"], 1, false, &model[0])
-		gl.Uniform4f(shader.Uniforms["color"], r, g, b, a)
+		gl.UniformMatrix4fv(shader.GetUniform("model"), 1, false, &model[0])
+		gl.Uniform4f(shader.GetUniform("color"), r, g, b, a)
 	}
 
 	gl.BindVertexArray(billboard.vao)

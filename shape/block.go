@@ -65,8 +65,8 @@ func (block *Block) Draw(x, y, z, r, g, b, a, scale float32) {
 	// remember this is in radians!
 	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
 	if shader := shader.GetActive(); shader != nil {
-		gl.UniformMatrix4fv(shader.Uniforms["model"], 1, false, &model[0])
-		gl.Uniform4f(shader.Uniforms["color"], r, g, b, a)
+		gl.UniformMatrix4fv(shader.GetUniform("model"), 1, false, &model[0])
+		gl.Uniform4f(shader.GetUniform("color"), r, g, b, a)
 	}
 
 	gl.BindVertexArray(block.vao)

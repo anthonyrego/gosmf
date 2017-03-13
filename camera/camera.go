@@ -44,8 +44,8 @@ func New(setActive bool) *Camera {
 func (cam *Camera) SetActive() {
 	state.activeCam = cam
 	if shader := shader.GetActive(); shader != nil {
-		gl.UniformMatrix4fv(shader.Uniforms["projection"], 1, false, &cam.projection[0])
-		gl.UniformMatrix4fv(shader.Uniforms["camera"], 1, false, &cam.loc[0])
+		gl.UniformMatrix4fv(shader.GetUniform("projection"), 1, false, &cam.projection[0])
+		gl.UniformMatrix4fv(shader.GetUniform("camera"), 1, false, &cam.loc[0])
 	}
 }
 
@@ -73,7 +73,7 @@ func (cam *Camera) SetPosition2D(x float32, y float32) {
 
 func (cam *Camera) update() {
 	if shader := shader.GetActive(); shader != nil && cam == state.activeCam {
-		gl.UniformMatrix4fv(shader.Uniforms["projection"], 1, false, &cam.projection[0])
-		gl.UniformMatrix4fv(shader.Uniforms["camera"], 1, false, &cam.loc[0])
+		gl.UniformMatrix4fv(shader.GetUniform("projection"), 1, false, &cam.projection[0])
+		gl.UniformMatrix4fv(shader.GetUniform("camera"), 1, false, &cam.loc[0])
 	}
 }

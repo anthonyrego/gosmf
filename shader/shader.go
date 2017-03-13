@@ -24,7 +24,7 @@ type Shader struct {
 	frag     string
 	id       uint32
 	loaded   bool
-	Uniforms map[string]int32
+	uniforms map[string]int32
 }
 
 // Activate will draw everything with this program and load it if it isnt loaded.
@@ -39,12 +39,20 @@ func (shader *Shader) Activate() {
 
 		gl.UseProgram(shader.id)
 
-		for key, _ := range shader.Uniforms {
-			shader.Uniforms[key] = gl.GetUniformLocation(program, gl.Str(key+"\x00"))
+		for key, _ := range shader.uniforms {
+			shader.uniforms[key] = gl.GetUniformLocation(program, gl.Str(key+"\x00"))
 		}
 	}
 	state.shader = shader
 	gl.UseProgram(shader.id)
+}
+
+// GetUniform will return the ID for a GLSL uniform
+func (shader *Shader) GetUniform(name string) int32 {
+	if id, ok := shader.uniforms[name]; ok {
+		return id
+	}
+	return 0
 }
 
 // Use will set active a shader by name from a map of preloaded plus user generated shaders
@@ -73,9 +81,9 @@ func New(name, vertexShaderSource, fragmentShaderSource string, uniforms []strin
 
 	gl.UseProgram(shader.id)
 
-	shader.Uniforms = map[string]int32{}
+	shader.uniforms = map[string]int32{}
 	for _, key := range uniforms {
-		shader.Uniforms[key] = gl.GetUniformLocation(program, gl.Str(key+"\x00"))
+		shader.uniforms[key] = gl.GetUniformLocation(program, gl.Str(key+"\x00"))
 	}
 
 	shaderList[name] = shader
