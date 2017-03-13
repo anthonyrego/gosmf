@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"image/color"
 	_ "image/jpeg"
 	"io"
 	"log"
@@ -23,7 +22,8 @@ func main() {
 	defer screen.Destroy()
 	defer window.Cleanup()
 
-	shader.Use("default")
+	shader.LoadBasicShaders()
+	shader.Use("texture")
 
 	updateCamera := initCamera(screen)
 	getCurrentFps := initFpsCounter(screen)
@@ -34,15 +34,14 @@ func main() {
 	}
 	// If font does not exist, download roboto
 	if _, err := os.Stat("Roboto-Regular.ttf"); os.IsNotExist(err) {
-		downloadFile("https://raw.githubusercontent.com/google/roboto/master/hinted/Roboto-Regular.ttf",
+		downloadFile("https://github.com/google/roboto/raw/master/src/hinted/Roboto-Regular.ttf",
 			"Roboto-Regular.ttf")
 	}
 
 	image, _ := sprite.New("img.jpg", 256, 256)
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
-	fpsDisplay := ttf.NewBillboard("fps ",
-		150, 50, 6, 300, color.RGBA{255, 50, 50, 255})
+	fpsDisplay := ttf.NewBillboard("fps ", 150, 50, 6, 300)
 
 	window.AddKeyListener(window.KeyEscape, func(event int) {
 		if event == window.KeyStatePressed {
@@ -63,7 +62,7 @@ func main() {
 		updateCamera()
 		image.Draw(0, 0, 0, 1)
 		fpsDisplay.SetText(fmt.Sprintf("fps %d", getCurrentFps()))
-		fpsDisplay.Draw((cam.Position[0]+cam.Bounds[0])-float32(fpsDisplay.Width), cam.Position[1], 0)
+		fpsDisplay.Draw((cam.Position[0]+cam.Bounds[0])-float32(fpsDisplay.Width), cam.Position[1], 0, 1, 0, 0, 1)
 	}
 }
 

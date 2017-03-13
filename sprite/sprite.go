@@ -125,6 +125,7 @@ func (sprite *Sprite) Draw(x float32, y float32, z float32, scale float32) {
 	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
 	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.Uniforms["model"], 1, false, &model[0])
+		gl.Uniform4f(shader.Uniforms["color"], 1, 1, 1, 1)
 	}
 
 	gl.BindVertexArray(sprite.vao)
@@ -143,6 +144,7 @@ func (sprite *Sprite) DrawFrame(x float32, y float32, z float32, scale float32, 
 	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
 	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.Uniforms["model"], 1, false, &model[0])
+		gl.Uniform4f(shader.Uniforms["color"], 1, 1, 1, 1)
 	}
 
 	gl.BindVertexArray(sprite.vao)
