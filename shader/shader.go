@@ -7,6 +7,8 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
+var shaderList = map[string]Shader{}
+
 var state struct {
 	shader *Shader
 }
@@ -55,7 +57,7 @@ func Use(shaderName string) (shader *Shader) {
 }
 
 // New creates a new shader object. The shader can later be activated by the given name with the Use function
-func New(name, vertexShaderSource, fragmentShaderSource string) error {
+func New(name, vertexShaderSource, fragmentShaderSource string, uniforms []string) error {
 	if _, found := shaderList[name]; found {
 		return fmt.Errorf("Shader already exists: %v", name)
 	}
@@ -71,7 +73,8 @@ func New(name, vertexShaderSource, fragmentShaderSource string) error {
 
 	gl.UseProgram(shader.id)
 
-	for key, _ := range shader.Uniforms {
+	shader.Uniforms = map[string]int32{}
+	for _, key := range uniforms {
 		shader.Uniforms[key] = gl.GetUniformLocation(program, gl.Str(key+"\x00"))
 	}
 
