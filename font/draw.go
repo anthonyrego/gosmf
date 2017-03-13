@@ -84,7 +84,7 @@ func (billboard *Billboard) Draw(x float32, y float32, z float32) {
 	model := mgl32.Translate3D(x, y, z)
 
 	if shader := shader.GetActive(); shader != nil {
-		gl.UniformMatrix4fv(shader.Model, 1, false, &model[0])
+		gl.UniformMatrix4fv(shader.Uniforms["model"], 1, false, &model[0])
 	}
 
 	gl.BindVertexArray(billboard.vao)

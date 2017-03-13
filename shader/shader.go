@@ -18,13 +18,11 @@ func GetActive() *Shader {
 
 // Shader is a struct for render programs
 type Shader struct {
-	vert       string
-	frag       string
-	id         uint32
-	loaded     bool
-	Projection int32
-	Camera     int32
-	Model      int32
+	vert     string
+	frag     string
+	id       uint32
+	loaded   bool
+	Uniforms map[string]int32
 }
 
 // Activate will draw everything with this program and load it if it isnt loaded.
@@ -39,10 +37,9 @@ func (shader *Shader) Activate() {
 
 		gl.UseProgram(shader.id)
 
-		shader.Projection = gl.GetUniformLocation(program, gl.Str("projection\x00"))
-		shader.Camera = gl.GetUniformLocation(program, gl.Str("camera\x00"))
-		shader.Model = gl.GetUniformLocation(program, gl.Str("model\x00"))
-
+		for key, _ := range shader.Uniforms {
+			shader.Uniforms[key] = gl.GetUniformLocation(program, gl.Str(key+"\x00"))
+		}
 	}
 	state.shader = shader
 	gl.UseProgram(shader.id)
@@ -74,9 +71,9 @@ func New(name, vertexShaderSource, fragmentShaderSource string) error {
 
 	gl.UseProgram(shader.id)
 
-	shader.Projection = gl.GetUniformLocation(program, gl.Str("projection\x00"))
-	shader.Camera = gl.GetUniformLocation(program, gl.Str("camera\x00"))
-	shader.Model = gl.GetUniformLocation(program, gl.Str("model\x00"))
+	for key, _ := range shader.Uniforms {
+		shader.Uniforms[key] = gl.GetUniformLocation(program, gl.Str(key+"\x00"))
+	}
 
 	shaderList[name] = shader
 

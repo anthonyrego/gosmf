@@ -31,6 +31,11 @@ var shaderList = map[string]Shader{
     ` + "\x00",
 		id:     0,
 		loaded: false,
+		Uniforms: map[string]int32{
+			"projection": 0,
+			"camera":     0,
+			"model":      0,
+		},
 	},
 	"color": Shader{
 		vert: `
@@ -39,9 +44,9 @@ var shaderList = map[string]Shader{
 		uniform mat4 projection;
 		uniform mat4 camera;
 		uniform mat4 model;
+		uniform vec4 color;
 
 		in vec3 vert;
-    in vec4 color;
     out vec4 colorV;
 
 		void main() {
@@ -60,5 +65,11 @@ var shaderList = map[string]Shader{
 		` + "\x00",
 		id:     0,
 		loaded: false,
+		Uniforms: map[string]int32{
+			"projection": 0,
+			"camera":     0,
+			"model":      0,
+			"color":      0,
+		},
 	},
 }
