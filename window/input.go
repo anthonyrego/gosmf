@@ -11,6 +11,14 @@ int getKeyState(int key) {
   }
   return SDL_RELEASED;
 }
+
+char *getClipboard() {
+  if (SDL_HasClipboardText() == SDL_TRUE){
+    return SDL_GetClipboardText();
+  }
+  return "";
+}
+
 */
 import "C"
 
@@ -40,4 +48,9 @@ func DestroyKeyListener(key int) {
 // GetKeyState will return the event state for a key
 func GetKeyState(key int) int {
 	return int(C.getKeyState(C.int(key)))
+}
+
+// GetClipboard will return text from the clipboard
+func GetClipboard() string {
+	return C.GoString(C.getClipboard())
 }
