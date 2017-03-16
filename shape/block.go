@@ -72,3 +72,8 @@ func (block *Block) Draw(x, y, z, r, g, b, a, scale float32) {
 	gl.BindVertexArray(block.vao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
+
+// Destroy frees up the vertex array
+func (block *Block) Destroy() {
+	gl.DeleteVertexArrays(1, &block.vao)
+}

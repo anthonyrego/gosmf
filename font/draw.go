@@ -107,3 +107,9 @@ func (billboard *Billboard) SetText(text string) {
 		billboard.Height = renderedHeight
 	}
 }
+
+// Destroy frees up the vertex array and texture
+func (billboard *Billboard) Destroy() {
+	gl.DeleteVertexArrays(1, &billboard.vao)
+	gl.DeleteTextures(1, &billboard.image)
+}
