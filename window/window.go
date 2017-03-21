@@ -28,21 +28,23 @@ func init() {
 
 // Screen object
 type Screen struct {
-	sdlWindow   *C.SDL_Window
-	renderer    *C.SDL_Renderer
-	Width       int
-	Height      int
-	startTime   time.Time
-	elapsedTime float64
-	frameTime   time.Time
-	name        string
-	shouldClose bool
-	vsync       bool
+	sdlWindow       *C.SDL_Window
+	renderer        *C.SDL_Renderer
+	Width           int
+	Height          int
+	startTime       time.Time
+	elapsedTime     float64
+	frameTime       time.Time
+	name            string
+	shouldClose     bool
+	vsync           bool
+	resizedCallback func(w, h int)
 }
 
 // New returns a newly created Screen
-func New(width int, height int, fullscreen bool, FSAA int, name string) *Screen {
+func New(width int, height int, fullscreen bool, resizeable bool, FSAA int, name string) *Screen {
 	window := &Screen{}
+	window.resizedCallback = func(w, h int) {}
 
 	C.SDL_Init(C.SDL_INIT_VIDEO)
 	C.setGlContextAttributes()
@@ -62,6 +64,9 @@ func New(width int, height int, fullscreen bool, FSAA int, name string) *Screen 
 	if fullscreen {
 		flags = flags | C.SDL_WINDOW_FULLSCREEN
 	}
+	if resizeable {
+		flags = flags | C.SDL_WINDOW_RESIZABLE
+	}
 
 	C.SDL_CreateWindowAndRenderer(C.int(width), C.int(height), C.Uint32(flags), &window.sdlWindow, &window.renderer)
 	C.SDL_SetWindowTitle(window.sdlWindow, C.CString(name))
@@ -79,6 +84,7 @@ func New(width int, height int, fullscreen bool, FSAA int, name string) *Screen 
 
 	gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+	gl.Viewport(0, 0, int32(width), int32(height))
 
 	window.Width = width
 	window.Height = height
@@ -90,7 +96,6 @@ func New(width int, height int, fullscreen bool, FSAA int, name string) *Screen 
 	window.frameTime = time.Now()
 	C.SDL_GL_SetSwapInterval(1)
 	window.vsync = true
-
 	return window
 }
 

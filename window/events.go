@@ -6,6 +6,11 @@ package window
 int getEventType(SDL_Event e) {
     return e.type;
 }
+
+int getWindowEventType(SDL_Event e) {
+    return e.window.event;
+}
+
 int getEventKey(SDL_Event e) {
     return e.key.keysym.scancode;
 }
@@ -25,6 +30,8 @@ const (
 	KeyStatePressed  int = int(C.SDL_PRESSED)
 	KeyStateReleased int = int(C.SDL_RELEASED)
 	TextInput        int = int(C.SDL_TEXTINPUT)
+	WindowEvent      int = int(C.SDL_WINDOWEVENT)
+	WindowResized    int = int(C.SDL_WINDOWEVENT_SIZE_CHANGED)
 )
 
 var inputTextCallback = func(text string) {}
@@ -37,6 +44,14 @@ func UnSetInputCallback() {
 	inputTextCallback = func(text string) {}
 }
 
+func (window *Screen) SetResizeCallback(callback func(w, h int)) {
+	window.resizedCallback = callback
+}
+
+func (window *Screen) UnSetResizeCallback() {
+	window.resizedCallback = func(w, h int) {}
+}
+
 func (window *Screen) runEventQueue() {
 	var event C.SDL_Event
 
@@ -45,6 +60,18 @@ func (window *Screen) runEventQueue() {
 		case WindowQuit:
 			window.SetToClose()
 			break
+
+		case WindowEvent:
+			switch int(C.getWindowEventType(event)) {
+			case WindowResized:
+				w := C.int(window.Width)
+				h := C.int(window.Height)
+				C.SDL_GL_GetDrawableSize(window.sdlWindow, &w, &h)
+				window.Width = int(w)
+				window.Height = int(h)
+				window.resizedCallback(window.Width, window.Height)
+				break
+			}
 
 		case KeyEventDown, KeyEventUp:
 			if listener, found := listenerList[int(C.getEventKey(event))]; found {
