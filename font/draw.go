@@ -20,18 +20,26 @@ type Billboard struct {
 	texHeight int
 }
 
+type NewBillboardParams struct {
+	Text      string
+	MaxWidth  int
+	MaxHeight int
+	Size      float64
+	Dpi       float64
+}
+
 // NewBillboard creates a 2D billboard for rendering
-func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, size float64, dpi float64) *Billboard {
+func (font *Font) NewBillboard(params NewBillboardParams) *Billboard {
 	b := &Billboard{}
 
-	b.texWidth = maxWidth
-	b.texHeight = maxHeight
+	b.texWidth = params.MaxWidth
+	b.texHeight = params.MaxHeight
 
-	image, renderedWidth, renderedHeight := font.createTexture(text, b.texWidth, b.texHeight, size, dpi)
+	image, renderedWidth, renderedHeight := font.createTexture(params.Text, b.texWidth, b.texHeight, params.Size, params.Dpi)
 
-	b.size = size
-	b.dpi = dpi
-	b.text = text
+	b.size = params.Size
+	b.dpi = params.Dpi
+	b.text = params.Text
 	b.font = font
 
 	b.Width = renderedWidth
@@ -45,8 +53,8 @@ func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, size fl
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 
-	w := float32(maxWidth)
-	h := float32(maxHeight)
+	w := float32(params.MaxWidth)
+	h := float32(params.MaxHeight)
 
 	billboardVertices := []float32{
 		w, h, 0.0, 1.0, 1.0,
@@ -74,14 +82,30 @@ func (font *Font) NewBillboard(text string, maxWidth int, maxHeight int, size fl
 	return b
 }
 
-// Draw will draw the billvboard in the x,y and z
-func (billboard *Billboard) Draw(x, y, z, r, g, b, a float32) {
+type DrawBillboardParams struct {
+	X, Y, Z                         float32
+	RotationX, RotationY, RotationZ float32
+	Scale, Rotate                   bool
+	ScaleX, ScaleY, ScaleZ          float32
+	R, G, B, A                      float32
+}
 
-	model := mgl32.Translate3D(x, y, z)
+// Draw will draw the billboard
+func (billboard *Billboard) Draw(params DrawBillboardParams) {
 
+	model := mgl32.Translate3D(params.X, params.Y, params.Z)
+
+	if params.Scale {
+		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
+	}
+	if params.Rotate {
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationX), mgl32.Vec3{1, 0, 0}))
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationY), mgl32.Vec3{0, 1, 0}))
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationZ), mgl32.Vec3{0, 0, 1}))
+	}
 	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.GetUniform("model"), 1, false, &model[0])
-		gl.Uniform4f(shader.GetUniform("color"), r, g, b, a)
+		gl.Uniform4f(shader.GetUniform("color"), params.R, params.G, params.B, params.A)
 	}
 
 	gl.BindVertexArray(billboard.vao)

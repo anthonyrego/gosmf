@@ -116,16 +116,35 @@ func (sprite *Sprite) create(file string, width int, height int, frames int, fra
 	return nil
 }
 
-// Draw will draw the sprite in the x,y and z
-func (sprite *Sprite) Draw(x float32, y float32, z float32, scale float32) {
+type DrawParams struct {
+	X, Y, Z                         float32
+	Scale, Rotate, Color            bool
+	RotationX, RotationY, RotationZ float32
+	ScaleX, ScaleY, ScaleZ          float32
+	R, G, B, A                      float32
+	Frame                           int
+}
 
-	model := mgl32.Translate3D(x, y, z)
-	model = model.Mul4(mgl32.Scale3D(scale, scale, 1))
-	// remember this is in radians!
-	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
+// Draw will draw the sprite
+func (sprite *Sprite) Draw(params DrawParams) {
+
+	model := mgl32.Translate3D(params.X, params.Y, params.Z)
+	if params.Scale {
+		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
+	}
+	if params.Rotate {
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationX), mgl32.Vec3{1, 0, 0}))
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationY), mgl32.Vec3{0, 1, 0}))
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationZ), mgl32.Vec3{0, 0, 1}))
+	}
+
 	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.GetUniform("model"), 1, false, &model[0])
-		gl.Uniform4f(shader.GetUniform("color"), 1, 1, 1, 1)
+		if params.Color {
+			gl.Uniform4f(shader.GetUniform("color"), params.R, params.G, params.B, params.A)
+		} else {
+			gl.Uniform4f(shader.GetUniform("color"), 1, 1, 1, 1)
+		}
 	}
 
 	gl.BindVertexArray(sprite.vao)
@@ -135,21 +154,30 @@ func (sprite *Sprite) Draw(x float32, y float32, z float32, scale float32) {
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
 
-// DrawFrame will draw the sprite in the x,y and z with the specified frame from a spritesheet
-func (sprite *Sprite) DrawFrame(x float32, y float32, z float32, scale float32, frame int) {
+// DrawFrame will draw the sprite with the specified frame from a spritesheet
+func (sprite *Sprite) DrawFrame(params DrawParams) {
 
-	model := mgl32.Translate3D(x, y, z)
-	model = model.Mul4(mgl32.Scale3D(scale, scale, 1))
-	// remember this is in radians!
-	// model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(90), mgl32.Vec3{0, 0, 1}))
-	if shader := shader.GetActive(); shader != nil {
-		gl.UniformMatrix4fv(shader.GetUniform("model"), 1, false, &model[0])
-		gl.Uniform4f(shader.GetUniform("color"), 1, 1, 1, 1)
+	model := mgl32.Translate3D(params.X, params.Y, params.Z)
+	if params.Scale {
+		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
+	}
+	if params.Rotate {
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationX), mgl32.Vec3{1, 0, 0}))
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationY), mgl32.Vec3{0, 1, 0}))
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationZ), mgl32.Vec3{0, 0, 1}))
 	}
 
+	if shader := shader.GetActive(); shader != nil {
+		gl.UniformMatrix4fv(shader.GetUniform("model"), 1, false, &model[0])
+		if params.Color {
+			gl.Uniform4f(shader.GetUniform("color"), params.R, params.G, params.B, params.A)
+		} else {
+			gl.Uniform4f(shader.GetUniform("color"), 1, 1, 1, 1)
+		}
+	}
 	gl.BindVertexArray(sprite.vao)
 
 	sprite.image.Bind()
 
-	gl.DrawArrays(gl.TRIANGLES, int32(frame*6), 6)
+	gl.DrawArrays(gl.TRIANGLES, int32(params.Frame*6), 6)
 }
