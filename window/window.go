@@ -41,8 +41,15 @@ type Screen struct {
 	resizedCallback func(w, h int)
 }
 
+type NewScreenParams struct {
+	Width, Height          int
+	FullScreen, Resizeable bool
+	Name                   string
+	AntiAliasingPasses     int // 2, 4, 8
+}
+
 // New returns a newly created Screen
-func New(width int, height int, fullscreen bool, resizeable bool, FSAA int, name string) *Screen {
+func New(params NewScreenParams) *Screen {
 	window := &Screen{}
 	window.resizedCallback = func(w, h int) {}
 
@@ -54,22 +61,23 @@ func New(width int, height int, fullscreen bool, resizeable bool, FSAA int, name
 	// Force hardware accel
 	C.SDL_GL_SetAttribute(C.SDL_GL_ACCELERATED_VISUAL, 1)
 
-	if FSAA > 0 {
+	if params.AntiAliasingPasses > 0 {
 		// FSAA (Fullscreen antialiasing)
 		C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLEBUFFERS, 1)
-		C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLESAMPLES, C.int(FSAA)) // 2, 4, 8
+		C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLESAMPLES, C.int(params.AntiAliasingPasses))
 	}
 
 	flags := C.SDL_WINDOW_OPENGL | C.SDL_RENDERER_ACCELERATED
-	if fullscreen {
+	if params.FullScreen {
 		flags = flags | C.SDL_WINDOW_FULLSCREEN
 	}
-	if resizeable {
+	if params.Resizeable {
 		flags = flags | C.SDL_WINDOW_RESIZABLE
 	}
 
-	C.SDL_CreateWindowAndRenderer(C.int(width), C.int(height), C.Uint32(flags), &window.sdlWindow, &window.renderer)
-	C.SDL_SetWindowTitle(window.sdlWindow, C.CString(name))
+	C.SDL_CreateWindowAndRenderer(C.int(params.Width), C.int(params.Height),
+		C.Uint32(flags), &window.sdlWindow, &window.renderer)
+	C.SDL_SetWindowTitle(window.sdlWindow, C.CString(params.Name))
 	C.SDL_GL_CreateContext(window.sdlWindow)
 
 	if err := gl.Init(); err != nil {
@@ -84,11 +92,11 @@ func New(width int, height int, fullscreen bool, resizeable bool, FSAA int, name
 
 	gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	gl.Viewport(0, 0, int32(width), int32(height))
+	gl.Viewport(0, 0, int32(params.Width), int32(params.Height))
 
-	window.Width = width
-	window.Height = height
-	window.name = name
+	window.Width = params.Width
+	window.Height = params.Height
+	window.name = params.Name
 	window.shouldClose = false
 	C.SDL_GL_SwapWindow(window.sdlWindow)
 

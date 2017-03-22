@@ -18,7 +18,12 @@ import (
 
 func main() {
 
-	screen := window.New(800, 600, false, 0, "gosmf example")
+	screen := window.New(window.NewScreenParams{
+		Name:       "gosmf example",
+		Width:      800,
+		Height:     600,
+		Resizeable: true,
+	})
 	defer screen.Destroy()
 	defer window.Cleanup()
 
@@ -44,7 +49,13 @@ func main() {
 	image, _ := sprite.New("img.jpg", 256, 256)
 	ttf, _ := font.New("Roboto-Regular.ttf")
 
-	fpsDisplay := ttf.NewBillboard("fps ", 150, 50, 6, 300)
+	fpsDisplay := ttf.NewBillboard(font.NewBillboardParams{
+		Text:      "fps ",
+		MaxWidth:  150,
+		MaxHeight: 50,
+		Size:      6,
+		Dpi:       300,
+	})
 
 	window.AddKeyListener(window.KeyEscape, func(event int) {
 		if event == window.KeyStatePressed {
@@ -63,9 +74,19 @@ func main() {
 
 	for screen.Update() {
 		updateCamera()
-		image.Draw(0, 0, 0, 1)
+		image.Draw(sprite.DrawParams{
+			X: 0,
+			Y: 30,
+		})
 		fpsDisplay.SetText(fmt.Sprintf("fps %d", getCurrentFps()))
-		fpsDisplay.Draw((cam.Position[0]+cam.Bounds[0])-float32(fpsDisplay.Width), cam.Position[1], 0, 1, 0, 0, 1)
+		fpsDisplay.Draw(font.DrawBillboardParams{
+			X: (cam.Position[0] + cam.Bounds[0]) - float32(fpsDisplay.Width),
+			Y: cam.Position[1],
+			R: 1,
+			G: 0,
+			B: 0,
+			A: 1,
+		})
 	}
 }
 
