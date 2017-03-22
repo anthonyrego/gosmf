@@ -149,6 +149,11 @@ func (window *Screen) SetClearColor(r float32, g float32, b float32, a float32) 
 	gl.ClearColor(r, g, b, a)
 }
 
+// SetViewport sets the GL viewport
+func (window *Screen) SetViewport(w int, h int) {
+	gl.Viewport(0, 0, int32(w), int32(h))
+}
+
 // SetVerticalSync sets the vertical sync status
 func (window *Screen) SetVerticalSync(enabled bool) {
 	if enabled {

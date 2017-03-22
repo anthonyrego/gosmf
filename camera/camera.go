@@ -54,7 +54,6 @@ func (cam *Camera) SetOrtho(w int, h int, zDepth int) {
 	cam.zDepth = float32(zDepth)
 	cam.Bounds = mgl32.Vec3{float32(w), float32(h), float32(zDepth)}
 	cam.projection = mgl32.Ortho(0, float32(w), float32(h), 0, -1, cam.zDepth)
-	gl.Viewport(0, 0, int32(w), int32(h))
 	cam.update()
 }
 
@@ -62,7 +61,6 @@ func (cam *Camera) SetOrtho(w int, h int, zDepth int) {
 func (cam *Camera) SetPerspective(angle float32, w int, h int, zDepth int) {
 	cam.Bounds = mgl32.Vec3{float32(w), float32(h), float32(zDepth)}
 	cam.projection = mgl32.Perspective(mgl32.DegToRad(angle), float32(w)/float32(h), 0.1, 10.0)
-	gl.Viewport(0, 0, int32(w), int32(h))
 	cam.update()
 }
 
