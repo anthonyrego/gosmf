@@ -118,7 +118,7 @@ func (sprite *Sprite) create(file string, width int, height int, frames int, fra
 
 type DrawParams struct {
 	X, Y, Z                         float32
-	Scale, Rotate, Color            bool
+	Scale, Color                    bool
 	RotationX, RotationY, RotationZ float32
 	ScaleX, ScaleY, ScaleZ          float32
 	R, G, B, A                      float32
@@ -129,13 +129,13 @@ type DrawParams struct {
 func (sprite *Sprite) Draw(params DrawParams) {
 
 	model := mgl32.Translate3D(params.X, params.Y, params.Z)
-	if params.Scale {
-		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
-	}
-	if params.Rotate {
+	if params.RotationX != 0 || params.RotationY != 0 || params.RotationZ != 0 {
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationX), mgl32.Vec3{1, 0, 0}))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationY), mgl32.Vec3{0, 1, 0}))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationZ), mgl32.Vec3{0, 0, 1}))
+	}
+	if params.Scale {
+		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
 	}
 
 	if shader := shader.GetActive(); shader != nil {
@@ -158,13 +158,13 @@ func (sprite *Sprite) Draw(params DrawParams) {
 func (sprite *Sprite) DrawFrame(params DrawParams) {
 
 	model := mgl32.Translate3D(params.X, params.Y, params.Z)
-	if params.Scale {
-		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
-	}
-	if params.Rotate {
+	if params.RotationX != 0 || params.RotationY != 0 || params.RotationZ != 0 {
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationX), mgl32.Vec3{1, 0, 0}))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationY), mgl32.Vec3{0, 1, 0}))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationZ), mgl32.Vec3{0, 0, 1}))
+	}
+	if params.Scale {
+		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
 	}
 
 	if shader := shader.GetActive(); shader != nil {

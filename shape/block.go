@@ -14,9 +14,9 @@ type Block struct {
 }
 
 // New creates and returns a new Block object
-func NewBlock(width, height int) (*Block, error) {
+func NewBlock() (*Block, error) {
 	block := &Block{}
-	err := block.create(width, height)
+	err := block.create()
 	if err != nil {
 		log.Fatalln("failed to create block shape:", err)
 		return nil, err
@@ -24,7 +24,7 @@ func NewBlock(width, height int) (*Block, error) {
 	return block, nil
 }
 
-func (block *Block) create(width, height int) error {
+func (block *Block) create() error {
 	var vao uint32
 
 	gl.GenVertexArrays(1, &vao)
@@ -34,16 +34,13 @@ func (block *Block) create(width, height int) error {
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 
-	w := float32(width)
-	h := float32(height)
-
 	shapeVertices := []float32{
-		w, h, 0.0,
+		1, 1, 0.0,
 		0.0, 0.0, 0.0,
-		0.0, h, 0.0,
-		w, h, 0.0,
+		0.0, 1, 0.0,
+		1, 1, 0.0,
 		0.0, 0.0, 0.0,
-		w, 0.0, 0.0,
+		1, 0.0, 0.0,
 	}
 
 	gl.BufferData(gl.ARRAY_BUFFER, len(shapeVertices)*4, gl.Ptr(shapeVertices), gl.STATIC_DRAW)
@@ -57,15 +54,27 @@ func (block *Block) create(width, height int) error {
 	return nil
 }
 
-// Draw will draw the block in the x,y and z
-func (block *Block) Draw(x, y, z, r, g, b, a, scale float32) {
+type BlockParams struct {
+	X, Y, Z                         float32
+	RotationX, RotationY, RotationZ float32
+	Width, Height                   float32
+	R, G, B, A                      float32
+}
 
-	model := mgl32.Translate3D(x, y, z)
-	model = model.Mul4(mgl32.Scale3D(scale, scale, 1))
+// Draw will draw the block
+func (block *Block) Draw(params BlockParams) {
+
+	model := mgl32.Translate3D(params.X, params.Y, params.Z)
+	if params.RotationX != 0 || params.RotationY != 0 || params.RotationZ != 0 {
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationX), mgl32.Vec3{1, 0, 0}))
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationY), mgl32.Vec3{0, 1, 0}))
+		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationZ), mgl32.Vec3{0, 0, 1}))
+	}
+	model = model.Mul4(mgl32.Scale3D(params.Width, params.Height, 1))
 
 	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.GetUniform("model"), 1, false, &model[0])
-		gl.Uniform4f(shader.GetUniform("color"), r, g, b, a)
+		gl.Uniform4f(shader.GetUniform("color"), params.R, params.G, params.B, params.A)
 	}
 
 	gl.BindVertexArray(block.vao)

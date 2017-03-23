@@ -85,7 +85,7 @@ func (font *Font) NewBillboard(params NewBillboardParams) *Billboard {
 type DrawBillboardParams struct {
 	X, Y, Z                         float32
 	RotationX, RotationY, RotationZ float32
-	Scale, Rotate                   bool
+	Scale                           bool
 	ScaleX, ScaleY, ScaleZ          float32
 	R, G, B, A                      float32
 }
@@ -94,14 +94,13 @@ type DrawBillboardParams struct {
 func (billboard *Billboard) Draw(params DrawBillboardParams) {
 
 	model := mgl32.Translate3D(params.X, params.Y, params.Z)
-
-	if params.Scale {
-		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
-	}
-	if params.Rotate {
+	if params.RotationX != 0 || params.RotationY != 0 || params.RotationZ != 0 {
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationX), mgl32.Vec3{1, 0, 0}))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationY), mgl32.Vec3{0, 1, 0}))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationZ), mgl32.Vec3{0, 0, 1}))
+	}
+	if params.Scale {
+		model = model.Mul4(mgl32.Scale3D(params.ScaleX, params.ScaleY, params.ScaleZ))
 	}
 	if shader := shader.GetActive(); shader != nil {
 		gl.UniformMatrix4fv(shader.GetUniform("model"), 1, false, &model[0])
