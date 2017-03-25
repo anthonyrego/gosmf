@@ -65,10 +65,15 @@ type BlockParams struct {
 func (block *Block) Draw(params BlockParams) {
 
 	model := mgl32.Translate3D(params.X, params.Y, params.Z)
+
 	if params.RotationX != 0 || params.RotationY != 0 || params.RotationZ != 0 {
+		offsetX := params.X + (params.Width * 0.5)
+		offsetY := params.Y + (params.Height * 0.5)
+		model = model.Mul4(mgl32.Translate3D(offsetX, offsetY, 0))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationX), mgl32.Vec3{1, 0, 0}))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationY), mgl32.Vec3{0, 1, 0}))
 		model = model.Mul4(mgl32.HomogRotate3D(mgl32.DegToRad(params.RotationZ), mgl32.Vec3{0, 0, 1}))
+		model = model.Mul4(mgl32.Translate3D(-offsetX, -offsetY, 0))
 	}
 	model = model.Mul4(mgl32.Scale3D(params.Width, params.Height, 1))
 
