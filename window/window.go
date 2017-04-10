@@ -19,6 +19,7 @@ void setGlContextAttributes() {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	#endif
 }
+
 */
 import "C"
 
@@ -67,7 +68,7 @@ func New(params NewScreenParams) *Screen {
 		C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLESAMPLES, C.int(params.AntiAliasingPasses))
 	}
 
-	flags := C.SDL_WINDOW_OPENGL | C.SDL_RENDERER_ACCELERATED
+	flags := C.SDL_WINDOW_OPENGL | C.SDL_RENDERER_ACCELERATED | C.SDL_WINDOW_ALLOW_HIGHDPI
 	if params.FullScreen {
 		flags = flags | C.SDL_WINDOW_FULLSCREEN
 	}
@@ -152,6 +153,13 @@ func (window *Screen) SetClearColor(r float32, g float32, b float32, a float32) 
 // SetViewport sets the GL viewport
 func (window *Screen) SetViewport(w int, h int) {
 	gl.Viewport(0, 0, int32(w), int32(h))
+}
+
+// GetWindowSize returns the currentl drawable window size in pixels
+func (window *Screen) GetWindowSize() (int, int) {
+	var w, h C.int
+	C.SDL_GL_GetDrawableSize(window.sdlWindow, &w, &h)
+	return int(w), int(h)
 }
 
 // SetVerticalSync sets the vertical sync status

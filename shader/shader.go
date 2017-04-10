@@ -56,6 +56,20 @@ func (shader *Shader) GetUniform(name string) int32 {
 	return 0
 }
 
+// SetUniform will set a uniform with provided data
+func (shader *Shader) SetUniform(name string, uniforms ...float32) {
+	switch len(uniforms) {
+	case 1:
+		gl.Uniform1f(shader.GetUniform(name), uniforms[0])
+	case 2:
+		gl.Uniform2f(shader.GetUniform(name), uniforms[0], uniforms[1])
+	case 3:
+		gl.Uniform3f(shader.GetUniform(name), uniforms[0], uniforms[1], uniforms[2])
+	case 4:
+		gl.Uniform4f(shader.GetUniform(name), uniforms[0], uniforms[1], uniforms[2], uniforms[3])
+	}
+}
+
 // GetShaderByName retrieves a loaded shader by its name
 func GetShaderByName(name string) (*Shader, error) {
 	if shader, ok := shaderList[name]; ok {
