@@ -23,10 +23,10 @@ func GetActiveCamera() *Camera {
 type Camera struct {
 	Position   mgl32.Vec3
 	Bounds     mgl32.Vec3
-	Focus      mgl32.Vec3
+	LookAt     mgl32.Vec3
 	Up         mgl32.Vec3
 	projection mgl32.Mat4
-	loc        mgl32.Mat4
+	viewMatrix mgl32.Mat4
 	zDepth     float32
 }
 
@@ -43,9 +43,9 @@ func New(setActive bool) *Camera {
 // SetActive will set current camera as the render camera
 func (cam *Camera) SetActive() {
 	state.activeCam = cam
-	if shader := shader.GetActive(); shader != nil {
-		gl.UniformMatrix4fv(shader.GetUniform("projection"), 1, false, &cam.projection[0])
-		gl.UniformMatrix4fv(shader.GetUniform("camera"), 1, false, &cam.loc[0])
+	if s := shader.GetActive(); s != nil {
+		gl.UniformMatrix4fv(s.GetUniform("projection"), 1, false, &cam.projection[0])
+		gl.UniformMatrix4fv(s.GetUniform("camera"), 1, false, &cam.viewMatrix[0])
 	}
 }
 
@@ -59,6 +59,7 @@ func (cam *Camera) SetOrtho(w int, h int, zDepth int) {
 
 // SetPerspective set a perspective projection
 func (cam *Camera) SetPerspective(angle float32, w int, h int, zDepth int) {
+	cam.zDepth = float32(zDepth)
 	cam.Bounds = mgl32.Vec3{float32(w), float32(h), float32(zDepth)}
 	cam.projection = mgl32.Perspective(mgl32.DegToRad(angle), float32(w)/float32(h), 0.1, 10.0)
 	cam.update()
@@ -67,13 +68,22 @@ func (cam *Camera) SetPerspective(angle float32, w int, h int, zDepth int) {
 // SetPosition2D will adjust the camera for ortho viewing to specified location
 func (cam *Camera) SetPosition2D(x float32, y float32) {
 	cam.Position = mgl32.Vec3{x, y, cam.zDepth}
-	cam.loc = mgl32.LookAtV(mgl32.Vec3{x, y, cam.zDepth}, mgl32.Vec3{x, y, 0}, mgl32.Vec3{0, 1, 0})
+	cam.viewMatrix = mgl32.LookAtV(mgl32.Vec3{x, y, cam.zDepth}, mgl32.Vec3{x, y, 0}, mgl32.Vec3{0, 1, 0})
+	cam.update()
+}
+
+// SetViewMatrix will set the lookAt and up vector as well as the position of the camera
+func (cam *Camera) SetViewMatrix(position mgl32.Vec3, lookAt mgl32.Vec3, up mgl32.Vec3) {
+	cam.Position = position
+	cam.LookAt = lookAt
+	cam.Up = up
+	cam.viewMatrix = mgl32.LookAtV(position, lookAt, up)
 	cam.update()
 }
 
 func (cam *Camera) update() {
-	if shader := shader.GetActive(); shader != nil && cam == state.activeCam {
-		gl.UniformMatrix4fv(shader.GetUniform("projection"), 1, false, &cam.projection[0])
-		gl.UniformMatrix4fv(shader.GetUniform("camera"), 1, false, &cam.loc[0])
+	if s := shader.GetActive(); s != nil && cam == state.activeCam {
+		gl.UniformMatrix4fv(s.GetUniform("projection"), 1, false, &cam.projection[0])
+		gl.UniformMatrix4fv(s.GetUniform("camera"), 1, false, &cam.viewMatrix[0])
 	}
 }
