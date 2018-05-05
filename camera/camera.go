@@ -58,7 +58,7 @@ func (cam *Camera) SetOrtho(w int, h int, zDepth int) {
 func (cam *Camera) SetPerspective(angle float32, w int, h int, zDepth int) {
 	cam.zDepth = float32(zDepth)
 	cam.Bounds = mgl32.Vec3{float32(w), float32(h), float32(zDepth)}
-	cam.projection = mgl32.Perspective(mgl32.DegToRad(angle), float32(w)/float32(h), 0.1, 10.0)
+	cam.projection = mgl32.Perspective(mgl32.DegToRad(angle), float32(w)/float32(h), 0.1, float32(zDepth))
 	cam.update()
 }
 
@@ -72,11 +72,6 @@ func (cam *Camera) SetPosition2D(x float32, y float32) {
 func (cam *Camera) SetViewMatrix(position mgl32.Vec3, lookAt mgl32.Vec3, up mgl32.Vec3) {
 	cam.viewMatrix = mgl32.LookAtV(position, lookAt, up)
 	cam.update()
-}
-
-// GetPosition returns the camera position
-func (cam *Camera) GetPosition() [3]float32 {
-	return [3]float32{cam.viewMatrix[12], cam.viewMatrix[13], cam.viewMatrix[14]}
 }
 
 // GetViewMatrix will get matrix for the camera
