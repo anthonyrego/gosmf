@@ -21,10 +21,7 @@ func GetActiveCamera() *Camera {
 
 // Camera type for camera making
 type Camera struct {
-	Position   mgl32.Vec3
 	Bounds     mgl32.Vec3
-	LookAt     mgl32.Vec3
-	Up         mgl32.Vec3
 	projection mgl32.Mat4
 	viewMatrix mgl32.Mat4
 	zDepth     float32
@@ -67,23 +64,29 @@ func (cam *Camera) SetPerspective(angle float32, w int, h int, zDepth int) {
 
 // SetPosition2D will adjust the camera for ortho viewing to specified location
 func (cam *Camera) SetPosition2D(x float32, y float32) {
-	cam.Position = mgl32.Vec3{x, y, cam.zDepth}
 	cam.viewMatrix = mgl32.LookAtV(mgl32.Vec3{x, y, cam.zDepth}, mgl32.Vec3{x, y, 0}, mgl32.Vec3{0, 1, 0})
 	cam.update()
 }
 
 // SetViewMatrix will set the lookAt and up vector as well as the position of the camera
 func (cam *Camera) SetViewMatrix(position mgl32.Vec3, lookAt mgl32.Vec3, up mgl32.Vec3) {
-	cam.Position = position
-	cam.LookAt = lookAt
-	cam.Up = up
 	cam.viewMatrix = mgl32.LookAtV(position, lookAt, up)
 	cam.update()
+}
+
+// GetPosition returns the camera position
+func (cam *Camera) GetPosition() [3]float32 {
+	return [3]float32{cam.viewMatrix[12], cam.viewMatrix[13], cam.viewMatrix[14]}
 }
 
 // GetViewMatrix will get matrix for the camera
 func (cam *Camera) GetViewMatrix() mgl32.Mat4 {
 	return cam.viewMatrix
+}
+
+// GetProjectionMatrix will get projection matrix for the camera
+func (cam *Camera) GetProjectionMatrix() mgl32.Mat4 {
+	return cam.projection
 }
 
 func (cam *Camera) update() {
