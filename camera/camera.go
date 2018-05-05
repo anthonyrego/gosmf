@@ -81,6 +81,11 @@ func (cam *Camera) SetViewMatrix(position mgl32.Vec3, lookAt mgl32.Vec3, up mgl3
 	cam.update()
 }
 
+// GetViewMatrix will get matrix for the camera
+func (cam *Camera) GetViewMatrix() mgl32.Mat4 {
+	return cam.viewMatrix
+}
+
 func (cam *Camera) update() {
 	if s := shader.GetActive(); s != nil && cam == state.activeCam {
 		gl.UniformMatrix4fv(s.GetUniform("projection"), 1, false, &cam.projection[0])
