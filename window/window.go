@@ -174,11 +174,15 @@ func (window *Screen) SetVerticalSync(enabled bool) {
 
 // LockMouseToWindow locks mouse to window
 func (window *Screen) LockMouseToWindow() {
-	C.SDL_SetWindowGrab(window.sdlWindow, C.SDL_FALSE)
+	C.SDL_SetHintWithPriority(C.CString(C.SDL_HINT_MOUSE_RELATIVE_MODE_WARP), C.CString("1"), C.SDL_HINT_OVERRIDE)
+	C.SDL_SetRelativeMouseMode(C.SDL_TRUE)
+	C.SDL_SetWindowGrab(window.sdlWindow, C.SDL_TRUE)
 }
 
 // UnlockMouseToWindow unlocks mouse to window
 func (window *Screen) UnlockMouseToWindow() {
+	C.SDL_SetHintWithPriority(C.CString(C.SDL_HINT_MOUSE_RELATIVE_MODE_WARP), C.CString("0"), C.SDL_HINT_OVERRIDE)
+	C.SDL_SetRelativeMouseMode(C.SDL_FALSE)
 	C.SDL_SetWindowGrab(window.sdlWindow, C.SDL_FALSE)
 }
 
