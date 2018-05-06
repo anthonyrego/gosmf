@@ -31,10 +31,10 @@ mouse getMouseState() {
 	return m;
 }
 
-int getMouseY() {
-	int y;
-	SDL_GetMouseState(NULL, &y);
-	return y;
+mouse getRelativeMouseState() {
+	mouse m;
+	m.State = SDL_GetRelativeMouseState(&m.X, &m.Y);
+	return m;
 }
 
 */
@@ -70,9 +70,16 @@ func GetKeyState(key int) int {
 	return int(C.getKeyState(C.int(key)))
 }
 
-// GetMouseState returns the position of the mouse
+// GetMouseState returns the state and position of the mouse
 func GetMouseState() (int, int, int) {
 	m := mouseState(C.getMouseState())
+	return int(m.X), int(m.Y), int(m.State)
+}
+
+// GetRelativeMouseState returns the state the position of the mouse
+// relative to when this function was last called
+func GetRelativeMouseState() (int, int, int) {
+	m := mouseState(C.getRelativeMouseState())
 	return int(m.X), int(m.Y), int(m.State)
 }
 
