@@ -37,14 +37,6 @@ mouse getRelativeMouseState() {
 	return m;
 }
 
-void lockMouseToWindow() {
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-}
-
-void unlockMouseToWindow() {
-	SDL_SetRelativeMouseMode(SDL_FALSE);
-}
-
 */
 import "C"
 
@@ -94,14 +86,4 @@ func GetRelativeMouseState() (int, int, int) {
 // GetClipboard will return text from the clipboard
 func GetClipboard() string {
 	return C.GoString(C.getClipboard())
-}
-
-// LockMouseToWindow locks mouse to window
-func LockMouseToWindow() {
-	C.lockMouseToWindow()
-}
-
-// UnlockMouseToWindow unlocks mouse to window
-func UnlockMouseToWindow() {
-	C.unlockMouseToWindow()
 }

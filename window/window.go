@@ -172,6 +172,16 @@ func (window *Screen) SetVerticalSync(enabled bool) {
 	window.vsync = enabled
 }
 
+// LockMouseToWindow locks mouse to window
+func (window *Screen) LockMouseToWindow() {
+	C.SDL_SetWindowGrab(window.sdlWindow, C.SDL_FALSE)
+}
+
+// UnlockMouseToWindow unlocks mouse to window
+func (window *Screen) UnlockMouseToWindow() {
+	C.SDL_SetWindowGrab(window.sdlWindow, C.SDL_FALSE)
+}
+
 // AmountPerSecond returns the adjusted value for a per second value based on frame time
 // This really needs a better function name
 func (window *Screen) AmountPerSecond(persecond float64) float64 {
