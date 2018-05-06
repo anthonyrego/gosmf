@@ -3,6 +3,12 @@ package window
 /*
 #include <SDL2/SDL.h>
 
+typedef struct MOUSESTATE {
+	int X;
+	int Y;
+	int State;
+}mouse;
+
 int getKeyState(int key) {
   const Uint8 *state = SDL_GetKeyboardState(NULL);
 
@@ -19,8 +25,22 @@ char *getClipboard() {
   return "";
 }
 
+mouse getMouseState() {
+	mouse m;
+	m.State = SDL_GetMouseState(&m.X, &m.Y);
+	return m;
+}
+
+int getMouseY() {
+	int y;
+	SDL_GetMouseState(NULL, &y);
+	return y;
+}
+
 */
 import "C"
+
+type mouseState C.struct_MOUSESTATE
 
 var listenerList = map[int]*listener{}
 
@@ -48,6 +68,12 @@ func DestroyKeyListener(key int) {
 // GetKeyState will return the event state for a key
 func GetKeyState(key int) int {
 	return int(C.getKeyState(C.int(key)))
+}
+
+// GetMouseState returns the position of the mouse
+func GetMouseState() (int, int, int) {
+	m := mouseState(C.getMouseState())
+	return int(m.X), int(m.Y), int(m.State)
 }
 
 // GetClipboard will return text from the clipboard
