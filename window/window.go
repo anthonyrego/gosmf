@@ -43,10 +43,10 @@ type Screen struct {
 }
 
 type NewScreenParams struct {
-	Width, Height          int
-	FullScreen, Resizeable bool
-	Name                   string
-	AntiAliasingPasses     int // 2, 4, 8
+	Width, Height                   int
+	FullScreen, Resizeable, HighDPI bool
+	Name                            string
+	AntiAliasingPasses              int // 2, 4, 8
 }
 
 // New returns a newly created Screen
@@ -68,9 +68,12 @@ func New(params NewScreenParams) *Screen {
 		C.SDL_GL_SetAttribute(C.SDL_GL_MULTISAMPLESAMPLES, C.int(params.AntiAliasingPasses))
 	}
 
-	flags := C.SDL_WINDOW_OPENGL | C.SDL_RENDERER_ACCELERATED | C.SDL_WINDOW_ALLOW_HIGHDPI
+	flags := C.SDL_WINDOW_OPENGL
 	if params.FullScreen {
 		flags = flags | C.SDL_WINDOW_FULLSCREEN
+	}
+	if params.HighDPI {
+		flags = flags | C.SDL_WINDOW_ALLOW_HIGHDPI
 	}
 	if params.Resizeable {
 		flags = flags | C.SDL_WINDOW_RESIZABLE
